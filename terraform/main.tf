@@ -379,10 +379,7 @@ resource "google_cloud_run_v2_service" "api" {
         value = var.environment == "prod" ? "production" : "development"
       }
 
-      env {
-        name  = "PORT"
-        value = "3000"
-      }
+      # PORT is automatically set by Cloud Run
 
       env {
         name  = "FIREBASE_PROJECT_ID"

@@ -11,7 +11,6 @@ import {
 import { Logger, UseGuards, Inject } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import Redis from 'ioredis';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { REDIS_CLIENT } from '../../common/redis/index.js';
 import { LocationService } from './location.service.js';
 import { WsAuthGuard } from './guards/ws-auth.guard.js';
@@ -47,13 +46,10 @@ export class LocationGateway
     private readonly locationService: LocationService,
   ) {}
 
-  async afterInit(server: Server): Promise<void> {
-    // Set up Redis adapter for horizontal scaling
-    const pubClient = this.redis.duplicate();
-    const subClient = this.redis.duplicate();
-
-    server.adapter(createAdapter(pubClient, subClient));
-    this.logger.log('Location Gateway initialized with Redis adapter');
+  afterInit(_server: Server): void {
+    // Redis adapter is configured at the application level in main.ts
+    // This gateway is ready to handle location events
+    this.logger.log('Location Gateway initialized');
   }
 
   async handleConnection(client: AuthenticatedSocket): Promise<void> {
