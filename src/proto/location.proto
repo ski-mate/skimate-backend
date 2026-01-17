@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package skimate.location;
+
+// GPS location ping from mobile client
+message LocationPing {
+  string user_id = 1;
+  string session_id = 2;
+  double latitude = 3;
+  double longitude = 4;
+  double altitude = 5;
+  double speed = 6;
+  double accuracy = 7;
+  optional double heading = 8;
+  int64 timestamp = 9;
+}
+
+// Batch of location pings
+message LocationPingBatch {
+  repeated LocationPing pings = 1;
+}
+
+// Location update broadcast to nearby friends
+message LocationUpdate {
+  string user_id = 1;
+  double latitude = 2;
+  double longitude = 3;
+  double altitude = 4;
+  double speed = 5;
+  int64 timestamp = 6;
+  optional string resort_id = 7;
+}
+
+// Proximity alert when friend is nearby
+message ProximityAlert {
+  string friend_id = 1;
+  string friend_name = 2;
+  double distance = 3;  // in meters
+  double latitude = 4;
+  double longitude = 5;
+  int64 timestamp = 6;
+}
+
+// Session start request
+message SessionStartRequest {
+  string user_id = 1;
+  optional string resort_id = 2;
+}
+
+// Session start response
+message SessionStartResponse {
+  string session_id = 1;
+  int64 start_time = 2;
+}
+
+// Session end request
+message SessionEndRequest {
+  string session_id = 1;
+}
+
+// Session summary after ending
+message SessionSummary {
+  string session_id = 1;
+  double total_vertical = 2;
+  double total_distance = 3;
+  double max_speed = 4;
+  int32 total_runs = 5;
+  int64 duration_seconds = 6;
+}

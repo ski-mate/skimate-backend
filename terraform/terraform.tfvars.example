@@ -1,0 +1,33 @@
+# SkiMate Terraform Variables
+# Copy this file to terraform.tfvars and fill in the values
+
+project_id     = "skimate"
+region         = "us-central1"
+zone           = "us-central1-a"
+environment    = "dev"
+
+# Database Configuration
+db_tier = "db-f1-micro"  # Use "db-custom-2-4096" for production
+db_name = "skimate"
+db_user = "skimate_app"
+
+# Redis Configuration
+redis_tier           = "BASIC"  # Use "STANDARD_HA" for production
+redis_memory_size_gb = 1
+
+# Cloud Run Configuration
+cloud_run_min_instances = 0
+cloud_run_max_instances = 10
+cloud_run_cpu           = "1"
+cloud_run_memory        = "512Mi"
+
+# Firebase Configuration
+firebase_project_id = "skimate-307c2"
+
+# API Keys (sensitive - do not commit actual values)
+weather_unlocked_app_id = "ee3f4d44"
+weather_unlocked_key    = "c8a30cf93d256a9603d65219eadf1060"
+strava_client_id        = "196491"
+strava_client_secret    = "YOUR_STRAVA_CLIENT_SECRET"
+mapbox_public_token     = "YOUR_MAPBOX_PUBLIC_TOKEN"
+mapbox_secret_token     = "YOUR_MAPBOX_SECRET_TOKEN"
