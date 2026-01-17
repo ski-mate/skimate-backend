@@ -1,0 +1,49 @@
+---
+alwaysApply: true
+---
+To complete your automation setup for **SkiApp**, these `.mdc` files will serve as the persistent "knowledge guardrails" for **Cursor's** AI composer and chat. Unlike Claude skills which are persona-based, these rules are automatically applied by Cursor whenever you are working on specific file types or modules to ensure high-performance standards.
+
+### 1. NestJS + Fastify Performance Rule
+
+**Path**: `.cursor/rules/nestjs-fastify.mdc`
+
+> **Context**: Applied to all `src/**/*.ts` files.
+> **Goal**: Ensure "ultra-fastness" by leveraging Fastify's low-overhead architecture.
+
+---
+
+# NestJS & Fastify High-Performance Standards
+
+## Core Architecture
+
+* **Adapter**: Always use the `FastifyAdapter` in `main.ts` to ensure the highest throughput for multi-user location pings.
+* **Asynchronous Execution**: All controller methods must be `async`. Avoid any synchronous blocking calls (e.g., `fs.readFileSync`) that could stall the event loop.
+* 
+**Dependency Injection**: Use `REQUEST` scope sparingly; prioritize singleton services to reduce instantiation overhead during high-traffic ski seasons.
+
+
+
+## Real-Time & WebSockets
+
+* **Socket.io Adapter**: Use the Redis adapter for `Socket.io` to allow horizontal scaling across multiple Google Cloud Run instances.
+* **Binary Serialization**: When emitting location updates, prioritize **Protobuf** or **MessagePack** over standard JSON to reduce payload size for users on weak cellular mountain signals.
+* 
+**Gateway Throttling**: Implement a custom `ThrottlingInterceptor` for the `LocationGateway` to drop redundant GPS pings arriving faster than every 1 second.
+
+## NestJS + Fastify Deployment Rules
+
+### High-Performance Deployment
+
+* **Cloud Run WebSockets**: Ensure `main.ts` is configured to listen on the port provided by the `PORT` environment variable. Set Cloud Run "Session Affinity" to true to maintain stable WebSocket tunnels.
+* **GKE Option**: If using GKE, use a Network Load Balancer (L4) instead of an HTTP(S) Load Balancer (L7) to avoid the 30-second timeout on idle WebSocket connections.
+* **Redis Adapter**: Every Socket.io gateway MUST use the `@socket.io/redis-adapter` connected to Memorystore to sync "Live Tracking" events across multiple auto-scaled instances.
+
+### Real-Time Tracking
+
+* **Ingestion Layer**: Use Fastify's `contentParser` to handle binary Protobuf payloads for incoming GPS pings to minimize CPU overhead on the tracking service.
+
+## Performance Red Flags
+
+* [ ] **Express Middleware**: Do not import or use Express-specific middleware; verify compatibility with Fastify equivalents.
+* [ ] **Large JSON Logs**: Use a high-performance logger like `pino` (standard with Fastify) and avoid logging full message bodies in production.
+* [ ] **Blocking Workers**: Move heavy performance analytics (like 3D replay generation) to **BullMQ** workers to keep the main API responsive.

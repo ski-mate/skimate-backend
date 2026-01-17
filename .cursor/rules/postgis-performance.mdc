@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+### 2. PostGIS & Database Performance Rule
+
+**Path**: `.cursor/rules/postgis-performance.mdc`
+
+> **Context**: Applied to all `src/modules/database/**`, `*.entity.ts`, and `*.repository.ts` files.
+> **Goal**: Optimize geospatial queries for safety-critical trail navigation and proximity features.
+
+---
+
+# PostGIS & PostgreSQL Performance Rules
+
+## Geospatial Query Patterns
+
+* **Indexing**: Every `geometry` or `geography` column MUST have a **GIST index** (Generalized Search Tree).
+* **Proximity Checks**: Use `ST_DWithin` for "Friends Near Me" queries rather than `ST_Distance`. `ST_DWithin` is index-accelerated and significantly faster for radius searches.
+* **SRID**: Standardize on **SRID 4326** (WGS 84) for all GPS coordinates.
+* **Boundary Checks**: Use `ST_Contains` for geofencing (checking if a user is on a specific trail or in a hazard zone).
+
+## Schema Optimization
+
+* **Table Partitioning**: Use declarative partitioning on the `location_pings` table based on `created_at` (e.g., monthly partitions) to keep query performance stable as history grows.
+* 
+**Geometry vs. Geography**: Use `geometry` for resort-level calculations (faster math) and `geography` only when high-accuracy distance measurements over very large distances are required.
+
+
+* **JSONB**: Store flexible resort metadata and user notification preferences in `JSONB` columns, but ensure frequently filtered keys are indexed.
+
+## Query Red Flags
+
+* [ ] **Functional Transforms**: Avoid using functions on indexed columns in the `WHERE` clause (e.g., `WHERE ST_AsText(geom) = ...`) as it breaks index usage.
+* [ ] **N+1 Problems**: Use `TypeORM` or `Prisma` relations carefully; always `leftJoinAndSelect` for messages and their senders to ensure chat loads in < 50ms.
+* [ ] **Full Table Scans**: Never perform a geospatial search without a bounding box or distance limit.
+
+## PostGIS & Mapbox Data Rules
+
+* **GeoJSON Export**: When preparing data for Mapbox MTS, ensure the backend generates Line-Delimited GeoJSON (GeoJSONL) to satisfy Mapbox's ingestion requirements.
+* **Simplification**: Use PostGIS `ST_Simplify` on trail LineStrings before sending them to Mapbox to reduce tileset size and improve mobile rendering performance.
+* **Coordinate Consistency**: Double-check that all Strava activity coordinates are transformed from their polyline format to SRID 4326 before storage.
+
+---

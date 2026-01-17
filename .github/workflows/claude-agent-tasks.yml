@@ -1,0 +1,48 @@
+name: Claude Agent Tasks
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  claude-agent:
+    # Only run if @claude is mentioned in the issue/comment
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+    
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full depth for branch creation
+
+      - name: Run Claude Agent Task
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Give Claude permission to use git and gh tools to fulfill tasks
+          additional_permissions: |
+            contents: write
+            pull-requests: write
+          
+          prompt: |
+            Perform the task requested in the issue: "${{ github.event.issue.title }}".
+            Context: ${{ github.event.comment.body || github.event.issue.body }}
+            
+            Guidelines:
+            - Follow the architecture in SKILL.md for the relevant module.
+            - Ensure NestJS/Fastify best practices.
+            - If changes are made, create a new branch and open a PR.
+            - Tag the PR with 'automated-task'.
+
+          claude_args: '--allowed-tools "Bash(git:*),Bash(gh pr:*),Bash(gh issue:*),Bash(npm:test),Bash(npm:build)"'

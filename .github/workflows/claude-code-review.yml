@@ -1,0 +1,46 @@
+name: Claude Backend Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Focus on performance-critical directories [cite: 20]
+    paths:
+      - 'src/modules/location/**'
+      - 'src/modules/messaging/**'
+      - 'src/modules/resort/**'
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Specialized prompt for SkiApp backend performance 
+          prompt: |
+            You are a Senior Backend Engineer for SkiApp. Review PR #${{ github.event.pull_request.number }}.
+            
+            Strictly evaluate for:
+            1. Latency: Does this code block the NestJS event loop?
+            2. Geospatial Efficiency: Are PostGIS queries using GIST indexes and ST_DWithin?
+            3. Redis Patterns: Are location pings using GEOADD with proper TTLs?
+            4. Real-time: Is the WebSocket payload minimized for 4G/5G mountain signals?
+
+            Use your 'location-proximity' and 'messaging-service' skills for guidance.
+            Leave a summary comment on the PR with 'LGTM' or 'Needs Optimization'.
+
+          claude_args: '--allowed-tools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"'
