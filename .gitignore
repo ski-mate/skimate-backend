@@ -142,4 +142,11 @@ vite.config.ts.timestamp-*
 
 # Firebase configuration files (contain API keys)
 GoogleService-Info.plist
-google-services.json
+google-services.jsonterraform.tfvars
+
+# Terraform secrets
+terraform.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl

@@ -11,7 +11,6 @@ import {
 import { Logger, UseGuards, Inject } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import Redis from 'ioredis';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { REDIS_CLIENT } from '../../common/redis/index.js';
 import { ChatService } from './chat.service.js';
 import { WsAuthGuard } from '../location/guards/ws-auth.guard.js';
@@ -66,12 +65,9 @@ export class ChatGateway
     private readonly chatService: ChatService,
   ) {}
 
-  async afterInit(server: Server): Promise<void> {
-    const pubClient = this.redis.duplicate();
-    const subClient = this.redis.duplicate();
-
-    server.adapter(createAdapter(pubClient, subClient));
-    this.logger.log('Chat Gateway initialized with Redis adapter');
+  afterInit(_server: Server): void {
+    // Redis adapter is configured at the application level in main.ts
+    this.logger.log('Chat Gateway initialized');
   }
 
   async handleConnection(client: AuthenticatedSocket): Promise<void> {
