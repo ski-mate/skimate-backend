@@ -26,6 +26,7 @@ export interface StravaConfig {
   clientSecret: string;
   accessToken: string;
   refreshToken: string;
+  verifyToken: string;
 }
 
 export interface MapboxConfig {
@@ -72,6 +73,7 @@ export default (): AppConfig => ({
     clientSecret: process.env.STRAVA_CLIENT_SECRET ?? '',
     accessToken: process.env.STRAVA_ACCESS_TOKEN ?? '',
     refreshToken: process.env.STRAVA_REFRESH_TOKEN ?? '',
+    verifyToken: process.env.STRAVA_VERIFY_TOKEN ?? '',
   },
   mapbox: {
     publicToken: process.env.MAPBOX_PUBLIC_TOKEN ?? '',

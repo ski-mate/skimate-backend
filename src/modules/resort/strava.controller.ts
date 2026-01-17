@@ -42,8 +42,10 @@ export class StravaController {
     private readonly stravaService: StravaService,
     private readonly configService: ConfigService<AppConfig, true>,
   ) {
-    // Use a simple verify token for webhook registration
-    this.verifyToken = 'skimate-strava-webhook';
+    // Get verify token from environment config
+    this.verifyToken = this.configService.get('strava.verifyToken', {
+      infer: true,
+    });
   }
 
   /**
@@ -116,8 +118,8 @@ export class StravaController {
     });
 
     if (!clientSecret) {
-      this.logger.warn('Strava client secret not configured');
-      return true; // Skip validation if not configured
+      this.logger.error('Strava client secret not configured - cannot verify webhook');
+      throw new Error('Strava client secret not configured');
     }
 
     const body = JSON.stringify(event);

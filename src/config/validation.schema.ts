@@ -77,6 +77,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  STRAVA_VERIFY_TOKEN = '';
+
+  @IsString()
+  @IsOptional()
   MAPBOX_PUBLIC_TOKEN = '';
 
   @IsString()
