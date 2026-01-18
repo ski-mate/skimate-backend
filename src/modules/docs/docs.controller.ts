@@ -245,23 +245,54 @@ export class DocsController {
           const sidebar = document.querySelector('.asyncapi__sidebar');
           if (sidebar) {
             sidebar.addEventListener('click', (e) => {
-              const link = e.target.closest('a[href^="#"]');
+              const link = e.target.closest('a');
               if (link) {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').slice(1);
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) {
-                  const navHeight = 130; // Account for fixed header + nav
-                  const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - navHeight;
-                  window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                  });
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const targetId = href.slice(1);
+                  
+                  // Try multiple ways to find the target element
+                  let targetEl = document.getElementById(targetId);
+                  
+                  // If not found by ID, try finding by data-id attribute
+                  if (!targetEl) {
+                    targetEl = document.querySelector('[data-id="' + targetId + '"]');
+                  }
+                  
+                  // If still not found, try finding by name attribute
+                  if (!targetEl) {
+                    targetEl = document.querySelector('[name="' + targetId + '"]');
+                  }
+                  
+                  // If still not found, search for element containing the text
+                  if (!targetEl) {
+                    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                    const searchText = targetId.replace(/-/g, ' ').toLowerCase();
+                    for (const heading of headings) {
+                      if (heading.textContent.toLowerCase().includes(searchText)) {
+                        targetEl = heading;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  if (targetEl) {
+                    const navHeight = 140; // Account for fixed header + nav
+                    const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                    window.scrollTo({
+                      top: targetPosition,
+                      behavior: 'smooth'
+                    });
+                  } else {
+                    console.log('Target not found for:', targetId);
+                  }
                 }
               }
             });
           }
-        }, 1000); // Wait for component to render
+        }, 1500); // Wait for component to fully render
         
       } catch (error) {
         console.error('AsyncAPI Error:', error);
