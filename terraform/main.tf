@@ -50,6 +50,8 @@ resource "google_project_service" "services" {
     "servicenetworking.googleapis.com",
     "iamcredentials.googleapis.com",
     "sts.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "containerregistry.googleapis.com",
   ])
 
   service            = each.key
