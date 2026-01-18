@@ -1,5 +1,5 @@
 import { Controller, Get, Res, Header } from '@nestjs/common';
-import { FastifyReply } from 'fastify';
+import type { FastifyReply } from 'fastify';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Public } from '../../common/decorators/index.js';
