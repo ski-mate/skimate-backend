@@ -486,7 +486,7 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
 # Workload Identity Pool for GitHub Actions
 resource "google_iam_workload_identity_pool" "github_pool" {
   project                   = var.project_id
-  workload_identity_pool_id = "github-actions-pool"
+  workload_identity_pool_id = "github-cicd-pool"
   display_name              = "GitHub Actions Pool"
   description               = "Identity pool for GitHub Actions CI/CD"
 
