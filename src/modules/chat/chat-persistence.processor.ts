@@ -16,7 +16,8 @@ interface MessageJobData {
 export class ChatPersistenceProcessor extends WorkerHost {
   private readonly logger = new Logger(ChatPersistenceProcessor.name);
 
-  process(job: Job<MessageJobData>): void {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async process(job: Job<MessageJobData>): Promise<void> {
     // Messages are already persisted in createMessage
     // This processor can be used for additional tasks like:
     // - Sending push notifications
