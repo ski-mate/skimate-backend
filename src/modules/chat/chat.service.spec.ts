@@ -265,10 +265,9 @@ describe('ChatService', () => {
         execute: jest.fn().mockResolvedValue({ affected: 1 }),
       });
 
-      const result = await service.markMessageAsRead('msg-123', 'user-456');
+      await service.markMessageAsRead('msg-123', 'user-456');
 
       expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalled();
-      expect(result).toBeUndefined();
     });
   });
 

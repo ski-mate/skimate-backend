@@ -92,14 +92,14 @@ describe('StravaController', () => {
       event_time: Date.now(),
     };
 
-    it('should return ok status for activity events', async () => {
-      const result = await controller.handleWebhook(mockActivityEvent);
+    it('should return ok status for activity events', () => {
+      const result = controller.handleWebhook(mockActivityEvent);
 
       expect(result).toEqual({ status: 'ok' });
     });
 
     it('should process activity create events asynchronously', async () => {
-      await controller.handleWebhook(mockActivityEvent);
+      controller.handleWebhook(mockActivityEvent);
 
       // Wait for setImmediate to execute
       await new Promise((resolve) => setImmediate(resolve));
@@ -117,7 +117,7 @@ describe('StravaController', () => {
         updates: { title: 'Updated Activity' },
       };
 
-      await controller.handleWebhook(updateEvent);
+      controller.handleWebhook(updateEvent);
       await new Promise((resolve) => setImmediate(resolve));
 
       expect(mockStravaService.handleActivityUpdated).toHaveBeenCalledWith(
@@ -133,7 +133,7 @@ describe('StravaController', () => {
         aspect_type: 'delete' as const,
       };
 
-      await controller.handleWebhook(deleteEvent);
+      controller.handleWebhook(deleteEvent);
       await new Promise((resolve) => setImmediate(resolve));
 
       expect(mockStravaService.handleActivityDeleted).toHaveBeenCalledWith(
@@ -148,17 +148,17 @@ describe('StravaController', () => {
         object_type: 'athlete' as const,
       };
 
-      await controller.handleWebhook(athleteEvent);
+      controller.handleWebhook(athleteEvent);
       await new Promise((resolve) => setImmediate(resolve));
 
       expect(mockStravaService.handleActivityCreated).not.toHaveBeenCalled();
     });
 
-    it('should throw error for invalid signature when secret configured', async () => {
+    it('should throw error for invalid signature when secret configured', () => {
       // The signature check happens but with wrong signature
-      await expect(
+      expect(() =>
         controller.handleWebhook(mockActivityEvent, 'invalid-signature'),
-      ).rejects.toThrow();
+      ).toThrow();
     });
   });
 });

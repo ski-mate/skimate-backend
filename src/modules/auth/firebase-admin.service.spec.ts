@@ -65,6 +65,7 @@ describe('FirebaseAdminService', () => {
 
       const result = await service.verifyIdToken('valid-token');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(auth.verifyIdToken).toHaveBeenCalledWith('valid-token');
       expect(result).toEqual(mockDecodedToken);
     });
@@ -96,6 +97,7 @@ describe('FirebaseAdminService', () => {
 
       const result = await service.getUser('test-user-id');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(auth.getUser).toHaveBeenCalledWith('test-user-id');
       expect(result).toEqual(mockUser);
     });
