@@ -549,6 +549,13 @@ resource "google_project_iam_member" "github_actions_storage_admin" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
+# Grant GitHub Actions service account permissions to push to Artifact Registry
+resource "google_project_iam_member" "github_actions_artifact_registry" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
 # Grant GitHub Actions service account permissions to act as Cloud Run service account
 resource "google_service_account_iam_member" "github_actions_act_as_cloudrun" {
   service_account_id = google_service_account.cloud_run.name
