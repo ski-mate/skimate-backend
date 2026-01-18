@@ -1,0 +1,1041 @@
+asyncapi: 3.0.0
+info:
+  title: SkiMate Backend API
+  version: 1.0.0
+  description: |
+    Real-time ski tracking and social platform backend API.
+    
+    This API uses Socket.io WebSockets for real-time communication with two main namespaces:
+    - `/location` - GPS tracking, ski sessions, and friend proximity
+    - `/chat` - Real-time messaging, typing indicators, and read receipts
+    
+    ## Authentication
+    All WebSocket connections require a valid Firebase ID token passed in the `auth` handshake option.
+  contact:
+    name: SkiMate Team
+  license:
+    name: Proprietary
+
+servers:
+  production:
+    host: skimate-api-dev-uge4k3ygea-uc.a.run.app
+    protocol: wss
+    description: Production server on Google Cloud Run
+    security:
+      - $ref: '#/components/securitySchemes/firebaseAuth'
+  development:
+    host: localhost:3000
+    protocol: ws
+    description: Local development server
+
+defaultContentType: application/json
+
+channels:
+  # ============================================
+  # LOCATION NAMESPACE (/location)
+  # ============================================
+  
+  locationPing:
+    address: /location
+    title: Location Ping
+    description: Send GPS coordinates to the server
+    messages:
+      locationPing:
+        $ref: '#/components/messages/LocationPingMessage'
+
+  sessionStart:
+    address: /location
+    title: Session Start
+    description: Start a new ski session
+    messages:
+      sessionStart:
+        $ref: '#/components/messages/SessionStartMessage'
+
+  sessionEnd:
+    address: /location
+    title: Session End
+    description: End current ski session
+    messages:
+      sessionEnd:
+        $ref: '#/components/messages/SessionEndMessage'
+
+  locationSubscribe:
+    address: /location
+    title: Location Subscribe
+    description: Subscribe to friend location updates
+    messages:
+      locationSubscribe:
+        $ref: '#/components/messages/LocationSubscribeMessage'
+
+  locationUpdate:
+    address: /location
+    title: Location Update
+    description: Receive friend location updates (server to client)
+    messages:
+      locationUpdate:
+        $ref: '#/components/messages/LocationUpdateMessage'
+
+  proximityAlert:
+    address: /location
+    title: Proximity Alert
+    description: Receive proximity alert when friend is nearby (<100m)
+    messages:
+      proximityAlert:
+        $ref: '#/components/messages/ProximityAlertMessage'
+
+  # ============================================
+  # CHAT NAMESPACE (/chat)
+  # ============================================
+
+  chatJoin:
+    address: /chat
+    title: Chat Join
+    description: Join a chat room (group or DM)
+    messages:
+      chatJoin:
+        $ref: '#/components/messages/ChatJoinMessage'
+
+  chatLeave:
+    address: /chat
+    title: Chat Leave
+    description: Leave a chat room
+    messages:
+      chatLeave:
+        $ref: '#/components/messages/ChatLeaveMessage'
+
+  chatSend:
+    address: /chat
+    title: Chat Send
+    description: Send a message to a chat room
+    messages:
+      chatSend:
+        $ref: '#/components/messages/ChatSendMessage'
+
+  chatTyping:
+    address: /chat
+    title: Chat Typing
+    description: Send/receive typing indicator
+    messages:
+      chatTyping:
+        $ref: '#/components/messages/ChatTypingMessage'
+
+  chatRead:
+    address: /chat
+    title: Chat Read
+    description: Send/receive read receipts
+    messages:
+      chatRead:
+        $ref: '#/components/messages/ChatReadMessage'
+
+  chatHistory:
+    address: /chat
+    title: Chat History
+    description: Request message history
+    messages:
+      chatHistory:
+        $ref: '#/components/messages/ChatHistoryMessage'
+
+  chatMessage:
+    address: /chat
+    title: Chat Message
+    description: Receive new message (server to client)
+    messages:
+      chatMessage:
+        $ref: '#/components/messages/ChatMessageReceivedMessage'
+
+operations:
+  # ============================================
+  # LOCATION OPERATIONS (Client -> Server)
+  # ============================================
+
+  sendLocationPing:
+    action: send
+    channel:
+      $ref: '#/channels/locationPing'
+    summary: Send GPS location ping
+    description: |
+      Send current GPS coordinates to the server. Rate limited to 1 ping per second.
+      Returns nearby friends within 500m radius.
+    messages:
+      - $ref: '#/channels/locationPing/messages/locationPing'
+    reply:
+      channel:
+        $ref: '#/channels/locationPing'
+      messages:
+        - $ref: '#/components/messages/LocationPingResponse'
+
+  startSession:
+    action: send
+    channel:
+      $ref: '#/channels/sessionStart'
+    summary: Start ski session
+    description: Start a new ski tracking session, optionally at a specific resort.
+    messages:
+      - $ref: '#/channels/sessionStart/messages/sessionStart'
+    reply:
+      channel:
+        $ref: '#/channels/sessionStart'
+      messages:
+        - $ref: '#/components/messages/SessionStartResponse'
+
+  endSession:
+    action: send
+    channel:
+      $ref: '#/channels/sessionEnd'
+    summary: End ski session
+    description: End the current ski session and receive session summary statistics.
+    messages:
+      - $ref: '#/channels/sessionEnd/messages/sessionEnd'
+    reply:
+      channel:
+        $ref: '#/channels/sessionEnd'
+      messages:
+        - $ref: '#/components/messages/SessionEndResponse'
+
+  subscribeToFriends:
+    action: send
+    channel:
+      $ref: '#/channels/locationSubscribe'
+    summary: Subscribe to friend locations
+    description: Subscribe to receive real-time location updates for specified friends.
+    messages:
+      - $ref: '#/channels/locationSubscribe/messages/locationSubscribe'
+    reply:
+      channel:
+        $ref: '#/channels/locationSubscribe'
+      messages:
+        - $ref: '#/components/messages/SubscribeResponse'
+
+  # ============================================
+  # LOCATION OPERATIONS (Server -> Client)
+  # ============================================
+
+  receiveLocationUpdate:
+    action: receive
+    channel:
+      $ref: '#/channels/locationUpdate'
+    summary: Receive friend location update
+    description: Receive real-time location updates from friends you've subscribed to.
+    messages:
+      - $ref: '#/channels/locationUpdate/messages/locationUpdate'
+
+  receiveProximityAlert:
+    action: receive
+    channel:
+      $ref: '#/channels/proximityAlert'
+    summary: Receive proximity alert
+    description: Receive alert when a friend is within 100 meters.
+    messages:
+      - $ref: '#/channels/proximityAlert/messages/proximityAlert'
+
+  # ============================================
+  # CHAT OPERATIONS (Client -> Server)
+  # ============================================
+
+  joinChatRoom:
+    action: send
+    channel:
+      $ref: '#/channels/chatJoin'
+    summary: Join chat room
+    description: Join a group chat or direct message conversation.
+    messages:
+      - $ref: '#/channels/chatJoin/messages/chatJoin'
+    reply:
+      channel:
+        $ref: '#/channels/chatJoin'
+      messages:
+        - $ref: '#/components/messages/ChatJoinResponse'
+
+  leaveChatRoom:
+    action: send
+    channel:
+      $ref: '#/channels/chatLeave'
+    summary: Leave chat room
+    description: Leave a chat room and stop receiving messages.
+    messages:
+      - $ref: '#/channels/chatLeave/messages/chatLeave'
+    reply:
+      channel:
+        $ref: '#/channels/chatLeave'
+      messages:
+        - $ref: '#/components/messages/SuccessResponse'
+
+  sendChatMessage:
+    action: send
+    channel:
+      $ref: '#/channels/chatSend'
+    summary: Send chat message
+    description: Send a message to a group or direct conversation.
+    messages:
+      - $ref: '#/channels/chatSend/messages/chatSend'
+    reply:
+      channel:
+        $ref: '#/channels/chatSend'
+      messages:
+        - $ref: '#/components/messages/ChatSendResponse'
+
+  sendTypingIndicator:
+    action: send
+    channel:
+      $ref: '#/channels/chatTyping'
+    summary: Send typing indicator
+    description: Indicate that the user is typing in a chat room.
+    messages:
+      - $ref: '#/channels/chatTyping/messages/chatTyping'
+
+  sendReadReceipt:
+    action: send
+    channel:
+      $ref: '#/channels/chatRead'
+    summary: Send read receipt
+    description: Mark a message as read.
+    messages:
+      - $ref: '#/channels/chatRead/messages/chatRead'
+    reply:
+      channel:
+        $ref: '#/channels/chatRead'
+      messages:
+        - $ref: '#/components/messages/SuccessResponse'
+
+  getMessageHistory:
+    action: send
+    channel:
+      $ref: '#/channels/chatHistory'
+    summary: Get message history
+    description: Request recent messages for a chat room.
+    messages:
+      - $ref: '#/channels/chatHistory/messages/chatHistory'
+    reply:
+      channel:
+        $ref: '#/channels/chatHistory'
+      messages:
+        - $ref: '#/components/messages/ChatHistoryResponse'
+
+  # ============================================
+  # CHAT OPERATIONS (Server -> Client)
+  # ============================================
+
+  receiveChatMessage:
+    action: receive
+    channel:
+      $ref: '#/channels/chatMessage'
+    summary: Receive chat message
+    description: Receive new messages in joined chat rooms.
+    messages:
+      - $ref: '#/channels/chatMessage/messages/chatMessage'
+
+  receiveTypingIndicator:
+    action: receive
+    channel:
+      $ref: '#/channels/chatTyping'
+    summary: Receive typing indicator
+    description: Receive typing status from other users in chat rooms.
+    messages:
+      - $ref: '#/components/messages/ChatTypingReceivedMessage'
+
+  receiveReadReceipt:
+    action: receive
+    channel:
+      $ref: '#/channels/chatRead'
+    summary: Receive read receipt
+    description: Receive notification when someone reads a message.
+    messages:
+      - $ref: '#/components/messages/ChatReadReceivedMessage'
+
+components:
+  securitySchemes:
+    firebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Firebase ID token obtained from Firebase Authentication.
+        Pass in the `auth.token` field of the Socket.io handshake options.
+
+  messages:
+    # ============================================
+    # LOCATION MESSAGES
+    # ============================================
+
+    LocationPingMessage:
+      name: location:ping
+      title: Location Ping
+      summary: GPS coordinates from the mobile device
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/LocationPing'
+
+    LocationPingResponse:
+      name: location:ping:response
+      title: Location Ping Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+            description: Whether the ping was processed successfully
+          throttled:
+            type: boolean
+            description: True if the ping was throttled (sent too fast)
+
+    SessionStartMessage:
+      name: session:start
+      title: Session Start Request
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          resortId:
+            type: string
+            format: uuid
+            description: Optional resort ID to associate with the session
+
+    SessionStartResponse:
+      name: session:start:response
+      title: Session Start Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+          sessionId:
+            type: string
+            format: uuid
+            description: Unique session identifier
+          startTime:
+            type: integer
+            format: int64
+            description: Unix timestamp in milliseconds
+
+    SessionEndMessage:
+      name: session:end
+      title: Session End Request
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - sessionId
+        properties:
+          sessionId:
+            type: string
+            format: uuid
+            description: Session ID to end
+
+    SessionEndResponse:
+      name: session:end:response
+      title: Session End Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+          summary:
+            $ref: '#/components/schemas/SessionSummary'
+
+    LocationSubscribeMessage:
+      name: location:subscribe
+      title: Location Subscribe Request
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - friendIds
+        properties:
+          friendIds:
+            type: array
+            items:
+              type: string
+              format: uuid
+            description: List of friend user IDs to subscribe to
+
+    SubscribeResponse:
+      name: location:subscribe:response
+      title: Subscribe Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+
+    LocationUpdateMessage:
+      name: location:update
+      title: Location Update
+      summary: Friend location update (server to client)
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/LocationUpdate'
+
+    ProximityAlertMessage:
+      name: location:proximity
+      title: Proximity Alert
+      summary: Alert when friend is nearby
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ProximityAlert'
+
+    # ============================================
+    # CHAT MESSAGES
+    # ============================================
+
+    ChatJoinMessage:
+      name: chat:join
+      title: Chat Join Request
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          groupId:
+            type: string
+            format: uuid
+            description: Group ID for group chat
+          recipientId:
+            type: string
+            format: uuid
+            description: Recipient user ID for direct message
+        description: Provide either groupId OR recipientId, not both
+
+    ChatJoinResponse:
+      name: chat:join:response
+      title: Chat Join Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+          roomId:
+            type: string
+            description: The room identifier to use for this conversation
+
+    ChatLeaveMessage:
+      name: chat:leave
+      title: Chat Leave Request
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - roomId
+        properties:
+          roomId:
+            type: string
+            description: Room ID to leave
+
+    ChatSendMessage:
+      name: chat:send
+      title: Chat Send Request
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SendMessagePayload'
+
+    ChatSendResponse:
+      name: chat:send:response
+      title: Chat Send Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+          messageId:
+            type: string
+            format: uuid
+            description: Unique message identifier
+          sentAt:
+            type: string
+            format: date-time
+            description: ISO 8601 timestamp when message was sent
+
+    ChatTypingMessage:
+      name: chat:typing
+      title: Chat Typing Request
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TypingPayload'
+
+    ChatTypingReceivedMessage:
+      name: chat:typing
+      title: Chat Typing Received
+      summary: Typing indicator from another user
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - userId
+          - roomId
+          - isTyping
+        properties:
+          userId:
+            type: string
+            format: uuid
+          roomId:
+            type: string
+          isTyping:
+            type: boolean
+
+    ChatReadMessage:
+      name: chat:read
+      title: Chat Read Request
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ReadReceiptPayload'
+
+    ChatReadReceivedMessage:
+      name: chat:read
+      title: Chat Read Received
+      summary: Read receipt from another user
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - messageId
+          - userId
+          - readAt
+        properties:
+          messageId:
+            type: string
+            format: uuid
+          userId:
+            type: string
+            format: uuid
+          readAt:
+            type: string
+            format: date-time
+
+    ChatHistoryMessage:
+      name: chat:history
+      title: Chat History Request
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          groupId:
+            type: string
+            format: uuid
+          recipientId:
+            type: string
+            format: uuid
+          limit:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+            description: Number of messages to retrieve
+
+    ChatHistoryResponse:
+      name: chat:history:response
+      title: Chat History Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+          messages:
+            type: array
+            items:
+              $ref: '#/components/schemas/ChatMessageItem'
+
+    ChatMessageReceivedMessage:
+      name: chat:message
+      title: Chat Message Received
+      summary: New message in a chat room
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ChatMessageReceived'
+
+    SuccessResponse:
+      name: success:response
+      title: Success Response
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - success
+        properties:
+          success:
+            type: boolean
+
+  schemas:
+    # ============================================
+    # LOCATION SCHEMAS
+    # ============================================
+
+    LocationPing:
+      type: object
+      required:
+        - sessionId
+        - latitude
+        - longitude
+        - altitude
+        - speed
+        - accuracy
+        - timestamp
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User ID (auto-populated from auth)
+        sessionId:
+          type: string
+          format: uuid
+          description: Active session ID
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+          description: GPS latitude in degrees
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+          description: GPS longitude in degrees
+        altitude:
+          type: number
+          format: double
+          description: Altitude in meters above sea level
+        speed:
+          type: number
+          format: double
+          minimum: 0
+          description: Speed in meters per second
+        accuracy:
+          type: number
+          format: double
+          minimum: 0
+          description: GPS accuracy in meters
+        heading:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 360
+          description: Compass heading in degrees (optional)
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp in milliseconds
+
+    LocationUpdate:
+      type: object
+      required:
+        - userId
+        - latitude
+        - longitude
+        - altitude
+        - speed
+        - timestamp
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: Friend's user ID
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        altitude:
+          type: number
+          format: double
+        speed:
+          type: number
+          format: double
+        timestamp:
+          type: integer
+          format: int64
+        resortId:
+          type: string
+          format: uuid
+
+    ProximityAlert:
+      type: object
+      required:
+        - friendId
+        - friendName
+        - distance
+        - latitude
+        - longitude
+        - timestamp
+      properties:
+        friendId:
+          type: string
+          format: uuid
+        friendName:
+          type: string
+          description: Display name of the friend
+        distance:
+          type: number
+          format: double
+          description: Distance in meters
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        timestamp:
+          type: integer
+          format: int64
+
+    SessionSummary:
+      type: object
+      required:
+        - totalVertical
+        - totalDistance
+        - maxSpeed
+        - durationSeconds
+      properties:
+        totalVertical:
+          type: number
+          format: double
+          description: Total vertical descent in meters
+        totalDistance:
+          type: number
+          format: double
+          description: Total distance traveled in meters
+        maxSpeed:
+          type: number
+          format: double
+          description: Maximum speed in meters per second
+        durationSeconds:
+          type: integer
+          description: Session duration in seconds
+
+    # ============================================
+    # CHAT SCHEMAS
+    # ============================================
+
+    SendMessagePayload:
+      type: object
+      required:
+        - content
+      properties:
+        groupId:
+          type: string
+          format: uuid
+          description: Target group ID (for group chat)
+        recipientId:
+          type: string
+          format: uuid
+          description: Target user ID (for direct message)
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          description: Message content
+        metadata:
+          $ref: '#/components/schemas/MessageMetadata'
+
+    MessageMetadata:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - text
+            - image
+            - location
+            - meetup_request
+          default: text
+        imageUrl:
+          type: string
+          format: uri
+          description: URL for image messages
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+
+    TypingPayload:
+      type: object
+      required:
+        - isTyping
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        recipientId:
+          type: string
+          format: uuid
+        isTyping:
+          type: boolean
+
+    ReadReceiptPayload:
+      type: object
+      required:
+        - messageId
+      properties:
+        messageId:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+
+    ChatMessageItem:
+      type: object
+      required:
+        - id
+        - senderId
+        - content
+        - sentAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+
+    ChatMessageReceived:
+      type: object
+      required:
+        - id
+        - senderId
+        - content
+        - sentAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        recipientId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/MessageMetadata'
+        sentAt:
+          type: string
+          format: date-time
+
+    # ============================================
+    # USER & RESORT SCHEMAS
+    # ============================================
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - fullName
+        - gender
+        - dateOfBirth
+        - skillLevel
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Firebase UID
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        phoneNumber:
+          type: string
+        gender:
+          $ref: '#/components/schemas/Gender'
+        dateOfBirth:
+          type: string
+          format: date
+        skillLevel:
+          $ref: '#/components/schemas/SkillLevel'
+        avatarUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Gender:
+      type: string
+      enum:
+        - Male
+        - Female
+        - Other
+        - Prefer not to say
+
+    SkillLevel:
+      type: string
+      enum:
+        - Beginner
+        - Intermediate
+        - Advanced
+        - Expert
+
+    FriendshipStatus:
+      type: string
+      enum:
+        - Pending
+        - Accepted
+        - Blocked
+
+    TrailDifficulty:
+      type: string
+      enum:
+        - Easy
+        - Intermediate
+        - Difficult
+        - Expert
+
+    TrailStatus:
+      type: string
+      enum:
+        - Open
+        - Closed
+        - Grooming
+
+    LiftType:
+      type: string
+      enum:
+        - Chairlift
+        - Gondola
+        - Tram
+        - Surface
+
+    LiftStatus:
+      type: string
+      enum:
+        - Open
+        - Closed
+        - On Hold
