@@ -12,6 +12,7 @@ import { HealthModule } from './modules/health/health.module.js';
 import { LocationModule } from './modules/location/location.module.js';
 import { ChatModule } from './modules/chat/chat.module.js';
 import { ResortModule } from './modules/resort/resort.module.js';
+import { DocsModule } from './modules/docs/docs.module.js';
 
 // Entities
 import { User, UserPreferences, Friendship } from './modules/users/entities/index.js';
@@ -92,6 +93,9 @@ const entities = [
 
     // Resort Integration Module
     ResortModule,
+
+    // API Documentation Module
+    DocsModule,
   ],
   providers: [
     // Global Firebase Auth Guard
