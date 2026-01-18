@@ -341,7 +341,7 @@ export class DocsController {
     html = this.escapeHtmlOutsideCode(html);
 
     // Code blocks (``` ... ```)
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_match: string, lang: string, code: string) => {
       const language = lang || 'plaintext';
       const unescapedCode = this.unescapeHtml(code.trim());
       return `<pre><code class="language-${language}">${this.escapeHtml(unescapedCode)}</code></pre>`;
