@@ -51,7 +51,7 @@ export class StravaService {
     try {
       // Find user by Strava athlete ID (would need to store this during OAuth)
       // For now, we skip if we can't find the user
-      const user = await this.findUserByStravaId(stravaAthleteId);
+      const user = this.findUserByStravaId(stravaAthleteId);
 
       if (!user) {
         this.logger.debug(`No user found for Strava athlete ${stravaAthleteId}`);

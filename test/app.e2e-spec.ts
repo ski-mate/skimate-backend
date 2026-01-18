@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -87,7 +87,7 @@ describe('AppModule (e2e)', () => {
       return request(app.getHttpServer())
         .get('/health')
         .expect(200)
-        .expect((res) => {
+        .expect((res: { body: { status: string; timestamp: string; uptime: number } }) => {
           expect(res.body.status).toBe('ok');
           expect(res.body.timestamp).toBeDefined();
           expect(res.body.uptime).toBeDefined();
@@ -134,7 +134,7 @@ describe('AppModule (e2e)', () => {
           event_time: Date.now(),
         })
         .expect(200)
-        .expect((res) => {
+        .expect((res: { body: { status: string } }) => {
           expect(res.body.status).toBe('ok');
         });
     });

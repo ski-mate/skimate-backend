@@ -286,12 +286,11 @@ describe('LocationService', () => {
       };
 
       mockSessionRepository.findOne.mockResolvedValue(mockSession);
-      const savedSession = {
+      mockSessionRepository.save.mockResolvedValue({
         ...mockSession,
         isActive: false,
         endTime: new Date(),
-      };
-      mockSessionRepository.save.mockResolvedValue(savedSession);
+      });
 
       const result = await service.endSession('user-123', 'session-123');
 

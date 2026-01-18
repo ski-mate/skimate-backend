@@ -104,10 +104,11 @@ describe('ChatGateway', () => {
     });
 
     it('should reject join when user has no access', async () => {
+      const joinMock = jest.fn();
       const mockSocket = {
         id: 'socket-123',
         user: { uid: 'user-123' },
-        join: jest.fn(),
+        join: joinMock,
       } as unknown as AuthenticatedSocket;
 
       mockChatService.verifyRoomAccess.mockResolvedValue(false);
@@ -116,7 +117,7 @@ describe('ChatGateway', () => {
       const result = await gateway.handleJoinRoom(mockSocket, { groupId: 'group-456' });
 
       expect(result.success).toBe(false);
-      expect(mockSocket.join).not.toHaveBeenCalled();
+      expect(joinMock).not.toHaveBeenCalled();
     });
 
     it('should fail without authenticated user', async () => {
@@ -183,10 +184,11 @@ describe('ChatGateway', () => {
 
   describe('handleTyping', () => {
     it('should broadcast typing indicator', async () => {
+      const toMock = jest.fn().mockReturnThis();
       const mockSocket = {
         id: 'socket-123',
         user: { uid: 'user-123' },
-        to: jest.fn().mockReturnThis(),
+        to: toMock,
         emit: jest.fn(),
       } as unknown as AuthenticatedSocket;
 
@@ -199,7 +201,7 @@ describe('ChatGateway', () => {
         5,
         '1',
       );
-      expect(mockSocket.to).toHaveBeenCalledWith('group:group-456');
+      expect(toMock).toHaveBeenCalledWith('group:group-456');
     });
 
     it('should remove typing indicator when stopped', async () => {
