@@ -169,7 +169,11 @@ describe('LocationService', () => {
         getMany: jest.fn().mockResolvedValue([]),
       });
 
-      const result = await service.findNearbyFriends('user-123', -105.9538, 39.6042);
+      const result = await service.findNearbyFriends(
+        'user-123',
+        -105.9538,
+        39.6042,
+      );
 
       expect(result).toEqual([]);
       expect(mockRedis.georadius).not.toHaveBeenCalled();
@@ -177,8 +181,16 @@ describe('LocationService', () => {
 
     it('should find nearby friends using Redis GEORADIUS', async () => {
       const mockFriendships = [
-        { userId1: 'user-123', userId2: 'friend-1', status: FriendshipStatus.ACCEPTED },
-        { userId1: 'friend-2', userId2: 'user-123', status: FriendshipStatus.ACCEPTED },
+        {
+          userId1: 'user-123',
+          userId2: 'friend-1',
+          status: FriendshipStatus.ACCEPTED,
+        },
+        {
+          userId1: 'friend-2',
+          userId2: 'user-123',
+          status: FriendshipStatus.ACCEPTED,
+        },
       ];
 
       mockFriendshipRepository.createQueryBuilder.mockReturnValue({
@@ -196,7 +208,11 @@ describe('LocationService', () => {
         .mockResolvedValueOnce({ id: 'friend-1', fullName: 'Friend One' })
         .mockResolvedValueOnce({ id: 'friend-2', fullName: 'Friend Two' });
 
-      const result = await service.findNearbyFriends('user-123', -105.9538, 39.6042);
+      const result = await service.findNearbyFriends(
+        'user-123',
+        -105.9538,
+        39.6042,
+      );
 
       expect(mockRedis.georadius).toHaveBeenCalledWith(
         'geo:users',
@@ -212,7 +228,7 @@ describe('LocationService', () => {
         friendId: 'friend-1',
         friendName: 'Friend One',
         distance: 100,
-        latitude: 39.60,
+        latitude: 39.6,
         longitude: -105.95,
       });
     });
@@ -258,6 +274,7 @@ describe('LocationService', () => {
       expect(mockSessionRepository.create).toHaveBeenCalledWith({
         userId: 'user-123',
         resortId: 'resort-1',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         startTime: expect.any(Date),
         isActive: true,
       });

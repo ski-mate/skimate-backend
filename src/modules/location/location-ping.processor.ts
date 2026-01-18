@@ -58,7 +58,7 @@ export class LocationPingProcessor extends WorkerHost {
     }
 
     const batch = this.batchBuffer.splice(0, this.BATCH_SIZE);
-    
+
     try {
       // Convert to entities with WKT Point format
       const entities = batch.map((data) => {
@@ -79,7 +79,7 @@ export class LocationPingProcessor extends WorkerHost {
 
       // Update session stats for each unique session
       const sessionIds = [...new Set(batch.map((d) => d.sessionId))];
-      
+
       for (const sessionId of sessionIds) {
         const sessionPings = batch.filter((d) => d.sessionId === sessionId);
         await this.updateSessionStats(sessionId, sessionPings);
@@ -88,7 +88,7 @@ export class LocationPingProcessor extends WorkerHost {
       this.logger.debug(`Persisted batch of ${entities.length} location pings`);
     } catch (error) {
       this.logger.error(`Failed to persist batch: ${(error as Error).message}`);
-      
+
       // Re-add failed items to buffer for retry
       this.batchBuffer.unshift(...batch);
     }

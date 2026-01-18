@@ -108,7 +108,9 @@ describe('FirebaseAuthGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(mockFirebaseAdmin.verifyIdToken).toHaveBeenCalledWith('valid-token');
+      expect(mockFirebaseAdmin.verifyIdToken).toHaveBeenCalledWith(
+        'valid-token',
+      );
     });
 
     it('should attach user to request on successful auth', async () => {
@@ -119,7 +121,9 @@ describe('FirebaseAuthGuard', () => {
         email_verified: true,
       });
 
-      const request: Record<string, unknown> = { headers: { authorization: 'Bearer valid-token' } };
+      const request: Record<string, unknown> = {
+        headers: { authorization: 'Bearer valid-token' },
+      };
       const context = {
         switchToHttp: () => ({
           getRequest: () => request,

@@ -106,7 +106,11 @@ export class ChatGateway
     }
 
     try {
-      const roomId = this.chatService.getRoomId(data.groupId, userId, data.recipientId);
+      const roomId = this.chatService.getRoomId(
+        data.groupId,
+        userId,
+        data.recipientId,
+      );
 
       // Verify user has access to this room
       const hasAccess = await this.chatService.verifyRoomAccess(
@@ -175,7 +179,11 @@ export class ChatGateway
     }
 
     try {
-      const roomId = this.chatService.getRoomId(data.groupId, userId, data.recipientId);
+      const roomId = this.chatService.getRoomId(
+        data.groupId,
+        userId,
+        data.recipientId,
+      );
 
       // Create and cache the message
       const message = await this.chatService.createMessage(
@@ -223,7 +231,11 @@ export class ChatGateway
       return;
     }
 
-    const roomId = this.chatService.getRoomId(data.groupId, userId, data.recipientId);
+    const roomId = this.chatService.getRoomId(
+      data.groupId,
+      userId,
+      data.recipientId,
+    );
 
     if (data.isTyping) {
       // Set typing indicator with 5-second TTL
@@ -276,7 +288,8 @@ export class ChatGateway
   @SubscribeMessage('chat:history')
   async handleGetHistory(
     @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() data: { groupId?: string; recipientId?: string; limit?: number },
+    @MessageBody()
+    data: { groupId?: string; recipientId?: string; limit?: number },
   ): Promise<{
     success: boolean;
     messages?: Array<{

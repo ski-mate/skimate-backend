@@ -23,7 +23,7 @@ describe('ChatPersistenceProcessor', () => {
   });
 
   describe('process', () => {
-    it('should process group message job', async () => {
+    it('should process group message job', () => {
       const mockJob = {
         id: 'job-123',
         name: 'persist-message',
@@ -36,11 +36,11 @@ describe('ChatPersistenceProcessor', () => {
         },
       } as Job;
 
-      // Should complete without throwing
-      await expect(processor.process(mockJob)).resolves.not.toThrow();
+      // Should complete without throwing (process is now sync)
+      expect(() => processor.process(mockJob)).not.toThrow();
     });
 
-    it('should process DM message job', async () => {
+    it('should process DM message job', () => {
       const mockJob = {
         id: 'job-125',
         name: 'persist-message',
@@ -53,10 +53,10 @@ describe('ChatPersistenceProcessor', () => {
         },
       } as Job;
 
-      await expect(processor.process(mockJob)).resolves.not.toThrow();
+      expect(() => processor.process(mockJob)).not.toThrow();
     });
 
-    it('should process message with metadata', async () => {
+    it('should process message with metadata', () => {
       const mockJob = {
         id: 'job-126',
         name: 'persist-message',
@@ -74,7 +74,7 @@ describe('ChatPersistenceProcessor', () => {
         },
       } as Job;
 
-      await expect(processor.process(mockJob)).resolves.not.toThrow();
+      expect(() => processor.process(mockJob)).not.toThrow();
     });
   });
 });

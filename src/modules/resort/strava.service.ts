@@ -54,7 +54,9 @@ export class StravaService {
       const user = this.findUserByStravaId(stravaAthleteId);
 
       if (!user) {
-        this.logger.debug(`No user found for Strava athlete ${stravaAthleteId}`);
+        this.logger.debug(
+          `No user found for Strava athlete ${stravaAthleteId}`,
+        );
         return;
       }
 
@@ -93,7 +95,8 @@ export class StravaService {
         maxSpeed: activity.max_speed,
         startTime: new Date(activity.start_date),
         endTime: new Date(
-          new Date(activity.start_date).getTime() + activity.elapsed_time * 1000,
+          new Date(activity.start_date).getTime() +
+            activity.elapsed_time * 1000,
         ),
         isActive: false,
         stravaActivityId: activityId,
@@ -123,7 +126,9 @@ export class StravaService {
     activityId: string,
     updates?: Record<string, unknown>,
   ): Promise<void> {
-    this.logger.log(`Strava activity ${activityId} updated: ${JSON.stringify(updates)}`);
+    this.logger.log(
+      `Strava activity ${activityId} updated: ${JSON.stringify(updates)}`,
+    );
 
     // Find existing session with this Strava activity ID
     const session = await this.sessionRepository.findOne({
@@ -227,7 +232,9 @@ export class StravaService {
 
       return (await response.json()) as StravaActivity;
     } catch (error) {
-      this.logger.error(`Failed to fetch Strava activity: ${(error as Error).message}`);
+      this.logger.error(
+        `Failed to fetch Strava activity: ${(error as Error).message}`,
+      );
       return null;
     }
   }
@@ -248,8 +255,7 @@ export class StravaService {
     ];
 
     return (
-      skiTypes.includes(activity.type) ||
-      skiTypes.includes(activity.sport_type)
+      skiTypes.includes(activity.type) || skiTypes.includes(activity.sport_type)
     );
   }
 }

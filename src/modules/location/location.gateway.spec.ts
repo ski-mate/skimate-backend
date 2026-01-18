@@ -169,9 +169,14 @@ describe('LocationGateway', () => {
 
       mockLocationService.startSession.mockResolvedValue(mockSession);
 
-      const result = await gateway.handleSessionStart(mockSocket, { resortId: 'resort-1' });
+      const result = await gateway.handleSessionStart(mockSocket, {
+        resortId: 'resort-1',
+      });
 
-      expect(mockLocationService.startSession).toHaveBeenCalledWith('user-123', 'resort-1');
+      expect(mockLocationService.startSession).toHaveBeenCalledWith(
+        'user-123',
+        'resort-1',
+      );
       expect(result.success).toBe(true);
       expect(result.sessionId).toBe('session-456');
     });
@@ -204,9 +209,14 @@ describe('LocationGateway', () => {
 
       mockLocationService.endSession.mockResolvedValue(mockSummary);
 
-      const result = await gateway.handleSessionEnd(mockSocket, { sessionId: 'session-456' });
+      const result = await gateway.handleSessionEnd(mockSocket, {
+        sessionId: 'session-456',
+      });
 
-      expect(mockLocationService.endSession).toHaveBeenCalledWith('user-123', 'session-456');
+      expect(mockLocationService.endSession).toHaveBeenCalledWith(
+        'user-123',
+        'session-456',
+      );
       expect(result.success).toBe(true);
       expect(result.summary).toEqual(mockSummary);
     });
@@ -217,7 +227,9 @@ describe('LocationGateway', () => {
         user: undefined,
       } as unknown as AuthenticatedSocket;
 
-      const result = await gateway.handleSessionEnd(mockSocket, { sessionId: 'session-456' });
+      const result = await gateway.handleSessionEnd(mockSocket, {
+        sessionId: 'session-456',
+      });
 
       expect(result.success).toBe(false);
     });
@@ -232,7 +244,10 @@ describe('LocationGateway', () => {
 
       await gateway.handleDisconnect(mockSocket);
 
-      expect(mockRedis.srem).toHaveBeenCalledWith('connections:user-123', 'socket-123');
+      expect(mockRedis.srem).toHaveBeenCalledWith(
+        'connections:user-123',
+        'socket-123',
+      );
     });
 
     it('should call handleUserDisconnect when no more connections', async () => {
@@ -245,7 +260,9 @@ describe('LocationGateway', () => {
 
       await gateway.handleDisconnect(mockSocket);
 
-      expect(mockLocationService.handleUserDisconnect).toHaveBeenCalledWith('user-123');
+      expect(mockLocationService.handleUserDisconnect).toHaveBeenCalledWith(
+        'user-123',
+      );
     });
   });
 
@@ -256,7 +273,9 @@ describe('LocationGateway', () => {
         user: { uid: 'user-123' },
       } as unknown as AuthenticatedSocket;
 
-      const result = await gateway.handleSubscribe(mockSocket, { friendIds: ['friend-1', 'friend-2'] });
+      const result = await gateway.handleSubscribe(mockSocket, {
+        friendIds: ['friend-1', 'friend-2'],
+      });
 
       expect(mockLocationService.subscribeToFriends).toHaveBeenCalledWith(
         'user-123',

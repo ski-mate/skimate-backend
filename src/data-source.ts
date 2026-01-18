@@ -6,7 +6,11 @@ dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 // Entities
-import { User, UserPreferences, Friendship } from './modules/users/entities/index.js';
+import {
+  User,
+  UserPreferences,
+  Friendship,
+} from './modules/users/entities/index.js';
 import { Group, Message } from './modules/chat/entities/index.js';
 import { Resort, Trail, Lift } from './modules/resort/entities/index.js';
 import { SkiSession, LocationPing } from './modules/location/entities/index.js';
@@ -54,7 +58,10 @@ export const dataSourceOptions: DataSourceOptions = {
   migrations,
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
 };
 
 const dataSource = new DataSource(dataSourceOptions);

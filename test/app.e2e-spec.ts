@@ -87,11 +87,15 @@ describe('AppModule (e2e)', () => {
       return request(app.getHttpServer())
         .get('/health')
         .expect(200)
-        .expect((res: { body: { status: string; timestamp: string; uptime: number } }) => {
-          expect(res.body.status).toBe('ok');
-          expect(res.body.timestamp).toBeDefined();
-          expect(res.body.uptime).toBeDefined();
-        });
+        .expect(
+          (res: {
+            body: { status: string; timestamp: string; uptime: number };
+          }) => {
+            expect(res.body.status).toBe('ok');
+            expect(res.body.timestamp).toBeDefined();
+            expect(res.body.uptime).toBeDefined();
+          },
+        );
     });
   });
 

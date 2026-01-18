@@ -56,7 +56,16 @@ export class LocationService {
     userId: string,
     ping: LocationPing,
   ): Promise<NearbyFriend[]> {
-    const { latitude, longitude, altitude, speed, accuracy, heading, timestamp, sessionId } = ping;
+    const {
+      latitude,
+      longitude,
+      altitude,
+      speed,
+      accuracy,
+      heading,
+      timestamp,
+      sessionId,
+    } = ping;
 
     // 1. Store current position in Redis Geo Set
     await this.redis.geoadd(GEO_KEY_PREFIX, longitude, latitude, userId);
@@ -244,7 +253,9 @@ export class LocationService {
   async handleUserDisconnect(userId: string): Promise<void> {
     // Don't end the session, just remove from real-time tracking
     await this.redis.zrem(GEO_KEY_PREFIX, userId);
-    this.logger.log(`User ${userId} disconnected, removed from real-time tracking`);
+    this.logger.log(
+      `User ${userId} disconnected, removed from real-time tracking`,
+    );
   }
 
   /**

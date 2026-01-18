@@ -224,7 +224,12 @@ describe('ChatService', () => {
 
       mockRedis.lrange.mockResolvedValue(cachedMessages);
 
-      const result = await service.getRecentMessages('group-123', undefined, undefined, 50);
+      const result = await service.getRecentMessages(
+        'group-123',
+        undefined,
+        undefined,
+        50,
+      );
 
       expect(mockRedis.lrange).toHaveBeenCalledWith(
         'chat:group:group-123:messages',
@@ -237,9 +242,14 @@ describe('ChatService', () => {
 
     it('should fallback to database when cache is empty', async () => {
       mockRedis.lrange.mockResolvedValue([]);
-      
+
       const dbMessages = [
-        { id: 'msg-1', senderId: 'user-1', content: 'Hello', sentAt: new Date() },
+        {
+          id: 'msg-1',
+          senderId: 'user-1',
+          content: 'Hello',
+          sentAt: new Date(),
+        },
       ];
 
       mockMessageRepository.createQueryBuilder.mockReturnValue({
@@ -249,7 +259,7 @@ describe('ChatService', () => {
         getMany: jest.fn().mockResolvedValue(dbMessages),
       });
 
-      const result = await service.getRecentMessages('group-123', undefined, undefined, 50);
+      await service.getRecentMessages('group-123', undefined, undefined, 50);
 
       expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalled();
     });

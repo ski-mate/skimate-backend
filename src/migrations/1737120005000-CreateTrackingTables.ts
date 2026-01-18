@@ -48,25 +48,45 @@ export class CreateTrackingTables1737120005000 implements MigrationInterface {
     `);
 
     // Create GIST spatial index for location_pings
-    await queryRunner.query(`CREATE INDEX "idx_location_pings_spatial" ON "location_pings" USING GIST ("coords")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_location_pings_spatial" ON "location_pings" USING GIST ("coords")`,
+    );
 
     // Create indexes for ski_sessions
-    await queryRunner.query(`CREATE INDEX "IDX_ski_sessions_user_start" ON "ski_sessions" ("user_id", "start_time")`);
-    await queryRunner.query(`CREATE INDEX "IDX_ski_sessions_active" ON "ski_sessions" ("is_active") WHERE "is_active" = true`);
-    await queryRunner.query(`CREATE INDEX "IDX_ski_sessions_resort" ON "ski_sessions" ("resort_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_ski_sessions_user_start" ON "ski_sessions" ("user_id", "start_time")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_ski_sessions_active" ON "ski_sessions" ("is_active") WHERE "is_active" = true`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_ski_sessions_resort" ON "ski_sessions" ("resort_id")`,
+    );
 
     // Create indexes for location_pings (critical for performance)
-    await queryRunner.query(`CREATE INDEX "IDX_location_pings_session_time" ON "location_pings" ("session_id", "created_at")`);
-    await queryRunner.query(`CREATE INDEX "IDX_location_pings_user_time" ON "location_pings" ("user_id", "created_at")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_location_pings_session_time" ON "location_pings" ("session_id", "created_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_location_pings_user_time" ON "location_pings" ("user_id", "created_at")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_location_pings_user_time"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_location_pings_session_time"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_location_pings_user_time"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_location_pings_session_time"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_ski_sessions_resort"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_ski_sessions_active"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_ski_sessions_user_start"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "idx_location_pings_spatial"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_ski_sessions_user_start"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "idx_location_pings_spatial"`,
+    );
     await queryRunner.query(`DROP TABLE IF EXISTS "location_pings"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "ski_sessions"`);
   }

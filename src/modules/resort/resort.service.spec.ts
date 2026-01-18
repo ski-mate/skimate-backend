@@ -218,11 +218,11 @@ describe('ResortService', () => {
 
     it('should fallback to database when cache miss', async () => {
       mockRedis.get.mockResolvedValue(null);
-      
+
       const dbLifts = [
         { id: 'lift-1', name: 'Summit Express', status: LiftStatus.OPEN },
       ];
-      
+
       mockLiftRepository.find.mockResolvedValue(dbLifts);
 
       const result = await service.getLiftStatuses('resort-123');
@@ -251,7 +251,10 @@ describe('ResortService', () => {
         status: LiftStatus.OPEN,
       });
 
-      const result = await service.updateLiftStatus('lift-123', LiftStatus.OPEN);
+      const result = await service.updateLiftStatus(
+        'lift-123',
+        LiftStatus.OPEN,
+      );
 
       expect(mockLiftRepository.save).toHaveBeenCalled();
       expect(mockRedis.del).toHaveBeenCalledWith('lift_status:resort-456');
@@ -310,7 +313,7 @@ describe('ResortService', () => {
           geojson: JSON.stringify({
             type: 'LineString',
             coordinates: [
-              [-105.95, 39.60],
+              [-105.95, 39.6],
               [-105.96, 39.61],
             ],
           }),

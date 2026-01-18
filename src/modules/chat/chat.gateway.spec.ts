@@ -86,19 +86,26 @@ describe('ChatGateway', () => {
 
   describe('handleJoinRoom', () => {
     it('should join a chat room when user has access', async () => {
+      const joinMock = jest.fn().mockResolvedValue(undefined);
       const mockSocket = {
         id: 'socket-123',
         user: { uid: 'user-123' },
-        join: jest.fn().mockResolvedValue(undefined),
+        join: joinMock,
       } as unknown as AuthenticatedSocket;
 
       mockChatService.verifyRoomAccess.mockResolvedValue(true);
       mockChatService.getRoomId.mockReturnValue('group:group-456');
 
-      const result = await gateway.handleJoinRoom(mockSocket, { groupId: 'group-456' });
+      const result = await gateway.handleJoinRoom(mockSocket, {
+        groupId: 'group-456',
+      });
 
-      expect(mockChatService.verifyRoomAccess).toHaveBeenCalledWith('user-123', 'group-456', undefined);
-      expect(mockSocket.join).toHaveBeenCalledWith('group:group-456');
+      expect(mockChatService.verifyRoomAccess).toHaveBeenCalledWith(
+        'user-123',
+        'group-456',
+        undefined,
+      );
+      expect(joinMock).toHaveBeenCalledWith('group:group-456');
       expect(result.success).toBe(true);
       expect(result.roomId).toBe('group:group-456');
     });
@@ -114,7 +121,9 @@ describe('ChatGateway', () => {
       mockChatService.verifyRoomAccess.mockResolvedValue(false);
       mockChatService.getRoomId.mockReturnValue('group:group-456');
 
-      const result = await gateway.handleJoinRoom(mockSocket, { groupId: 'group-456' });
+      const result = await gateway.handleJoinRoom(mockSocket, {
+        groupId: 'group-456',
+      });
 
       expect(result.success).toBe(false);
       expect(joinMock).not.toHaveBeenCalled();
@@ -126,7 +135,9 @@ describe('ChatGateway', () => {
         user: undefined,
       } as unknown as AuthenticatedSocket;
 
-      const result = await gateway.handleJoinRoom(mockSocket, { groupId: 'group-456' });
+      const result = await gateway.handleJoinRoom(mockSocket, {
+        groupId: 'group-456',
+      });
 
       expect(result.success).toBe(false);
     });
@@ -194,7 +205,10 @@ describe('ChatGateway', () => {
 
       mockChatService.getRoomId.mockReturnValue('group:group-456');
 
-      await gateway.handleTyping(mockSocket, { groupId: 'group-456', isTyping: true });
+      await gateway.handleTyping(mockSocket, {
+        groupId: 'group-456',
+        isTyping: true,
+      });
 
       expect(mockRedis.setex).toHaveBeenCalledWith(
         'typing:group:group-456:user-123',
@@ -214,9 +228,14 @@ describe('ChatGateway', () => {
 
       mockChatService.getRoomId.mockReturnValue('group:group-456');
 
-      await gateway.handleTyping(mockSocket, { groupId: 'group-456', isTyping: false });
+      await gateway.handleTyping(mockSocket, {
+        groupId: 'group-456',
+        isTyping: false,
+      });
 
-      expect(mockRedis.del).toHaveBeenCalledWith('typing:group:group-456:user-123');
+      expect(mockRedis.del).toHaveBeenCalledWith(
+        'typing:group:group-456:user-123',
+      );
     });
   });
 
@@ -232,7 +251,10 @@ describe('ChatGateway', () => {
         groupId: 'group-456',
       });
 
-      expect(mockChatService.markMessageAsRead).toHaveBeenCalledWith('msg-123', 'user-123');
+      expect(mockChatService.markMessageAsRead).toHaveBeenCalledWith(
+        'msg-123',
+        'user-123',
+      );
       expect(result.success).toBe(true);
     });
   });
@@ -245,13 +267,21 @@ describe('ChatGateway', () => {
       } as unknown as AuthenticatedSocket;
 
       const mockMessages = [
-        { id: 'msg-1', senderId: 'user-1', content: 'Hello', sentAt: new Date() },
+        {
+          id: 'msg-1',
+          senderId: 'user-1',
+          content: 'Hello',
+          sentAt: new Date(),
+        },
         { id: 'msg-2', senderId: 'user-2', content: 'Hi', sentAt: new Date() },
       ];
 
       mockChatService.getRecentMessages.mockResolvedValue(mockMessages);
 
-      const result = await gateway.handleGetHistory(mockSocket, { groupId: 'group-456', limit: 50 });
+      const result = await gateway.handleGetHistory(mockSocket, {
+        groupId: 'group-456',
+        limit: 50,
+      });
 
       expect(mockChatService.getRecentMessages).toHaveBeenCalledWith(
         'group-456',

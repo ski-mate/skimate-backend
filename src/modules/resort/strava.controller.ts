@@ -54,9 +54,9 @@ export class StravaController {
    */
   @Get()
   @Public()
-  handleChallenge(
-    @Query() query: StravaWebhookChallenge,
-  ): { 'hub.challenge': string } {
+  handleChallenge(@Query() query: StravaWebhookChallenge): {
+    'hub.challenge': string;
+  } {
     this.logger.log('Received Strava webhook challenge');
 
     if (query['hub.mode'] !== 'subscribe') {
@@ -118,7 +118,9 @@ export class StravaController {
     });
 
     if (!clientSecret) {
-      this.logger.error('Strava client secret not configured - cannot verify webhook');
+      this.logger.error(
+        'Strava client secret not configured - cannot verify webhook',
+      );
       throw new Error('Strava client secret not configured');
     }
 

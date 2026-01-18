@@ -21,12 +21,7 @@ import { Friendship } from '../users/entities/friendship.entity.js';
       },
     }),
   ],
-  providers: [
-    ChatGateway,
-    ChatService,
-    GroupService,
-    ChatPersistenceProcessor,
-  ],
+  providers: [ChatGateway, ChatService, GroupService, ChatPersistenceProcessor],
   exports: [ChatService, GroupService],
 })
 export class ChatModule {}

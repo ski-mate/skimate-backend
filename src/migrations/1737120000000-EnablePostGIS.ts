@@ -10,7 +10,9 @@ export class EnablePostGIS1737120000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP EXTENSION IF EXISTS postgis_topology CASCADE`);
+    await queryRunner.query(
+      `DROP EXTENSION IF EXISTS postgis_topology CASCADE`,
+    );
     await queryRunner.query(`DROP EXTENSION IF EXISTS postgis CASCADE`);
   }
 }

@@ -79,7 +79,9 @@ export async function loadLocationProto(): Promise<protobuf.Root> {
   return locationProto;
 }
 
-export async function encodeLocationPing(ping: LocationPing): Promise<Uint8Array> {
+export async function encodeLocationPing(
+  ping: LocationPing,
+): Promise<Uint8Array> {
   const root = await loadLocationProto();
   const LocationPingType = root.lookupType('skimate.location.LocationPing');
 
@@ -98,7 +100,9 @@ export async function encodeLocationPing(ping: LocationPing): Promise<Uint8Array
   return LocationPingType.encode(message).finish();
 }
 
-export async function decodeLocationPing(buffer: Uint8Array): Promise<LocationPing> {
+export async function decodeLocationPing(
+  buffer: Uint8Array,
+): Promise<LocationPing> {
   const root = await loadLocationProto();
   const LocationPingType = root.lookupType('skimate.location.LocationPing');
 
@@ -121,7 +125,9 @@ export async function decodeLocationPing(buffer: Uint8Array): Promise<LocationPi
   };
 }
 
-export async function encodeLocationUpdate(update: LocationUpdate): Promise<Uint8Array> {
+export async function encodeLocationUpdate(
+  update: LocationUpdate,
+): Promise<Uint8Array> {
   const root = await loadLocationProto();
   const LocationUpdateType = root.lookupType('skimate.location.LocationUpdate');
 
@@ -138,7 +144,9 @@ export async function encodeLocationUpdate(update: LocationUpdate): Promise<Uint
   return LocationUpdateType.encode(message).finish();
 }
 
-export async function decodeLocationUpdate(buffer: Uint8Array): Promise<LocationUpdate> {
+export async function decodeLocationUpdate(
+  buffer: Uint8Array,
+): Promise<LocationUpdate> {
   const root = await loadLocationProto();
   const LocationUpdateType = root.lookupType('skimate.location.LocationUpdate');
 

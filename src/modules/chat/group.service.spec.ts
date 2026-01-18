@@ -146,7 +146,9 @@ describe('GroupService', () => {
         members: [...existingGroup.members, newUser],
       });
 
-      const result = await service.addMembers('group-123', 'user-1', ['user-2']);
+      const result = await service.addMembers('group-123', 'user-1', [
+        'user-2',
+      ]);
 
       expect(result.members).toHaveLength(2);
     });
@@ -177,7 +179,9 @@ describe('GroupService', () => {
       ]);
       mockGroupRepository.save.mockResolvedValue(existingGroup);
 
-      const result = await service.addMembers('group-123', 'user-1', ['user-2']);
+      const result = await service.addMembers('group-123', 'user-1', [
+        'user-2',
+      ]);
 
       expect(result.members).toHaveLength(2);
     });
@@ -200,7 +204,11 @@ describe('GroupService', () => {
         members: [{ id: 'user-1', fullName: 'User One' }],
       });
 
-      const result = await service.removeMember('group-123', 'user-1', 'user-2');
+      const result = await service.removeMember(
+        'group-123',
+        'user-1',
+        'user-2',
+      );
 
       expect(result.members).toHaveLength(1);
     });
@@ -221,7 +229,11 @@ describe('GroupService', () => {
         members: [{ id: 'user-1', fullName: 'User One' }],
       });
 
-      const result = await service.removeMember('group-123', 'user-2', 'user-2');
+      const result = await service.removeMember(
+        'group-123',
+        'user-2',
+        'user-2',
+      );
 
       expect(result.members).toHaveLength(1);
     });
@@ -255,11 +267,7 @@ describe('GroupService', () => {
     it('should calculate centroid from member locations', async () => {
       const mockGroup = {
         id: 'group-123',
-        members: [
-          { id: 'user-1' },
-          { id: 'user-2' },
-          { id: 'user-3' },
-        ],
+        members: [{ id: 'user-1' }, { id: 'user-2' }, { id: 'user-3' }],
       };
 
       mockGroupRepository.findOne.mockResolvedValue(mockGroup);
@@ -328,9 +336,9 @@ describe('GroupService', () => {
         members: [],
       });
 
-      await expect(
-        service.deleteGroup('group-123', 'user-2'),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.deleteGroup('group-123', 'user-2')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });
