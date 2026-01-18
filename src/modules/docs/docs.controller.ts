@@ -137,16 +137,64 @@ export class DocsController {
   ${this.getHeadContent('SkiMate API Documentation')}
   <link rel="stylesheet" href="https://unpkg.com/@asyncapi/react-component@1.4.10/styles/default.min.css">
   <style>
-    #asyncapi { @apply bg-white rounded-xl shadow-sm overflow-hidden; }
-    #asyncapi [id] { scroll-margin-top: 1rem; }
+    /* AsyncAPI Layout - Fixed sidebar on left */
+    .asyncapi {
+      display: flex !important;
+      flex-direction: row !important;
+    }
+    
+    /* Sidebar - Always visible on left */
+    .asyncapi__sidebar {
+      position: fixed !important;
+      left: 0 !important;
+      top: 130px !important;
+      bottom: 0 !important;
+      width: 280px !important;
+      overflow-y: auto !important;
+      background: #f8fafc !important;
+      border-right: 1px solid #e2e8f0 !important;
+      padding: 1rem !important;
+      z-index: 40 !important;
+    }
+    
+    /* Hide the hamburger menu button */
+    .asyncapi__sidebar-button {
+      display: none !important;
+    }
+    
+    /* Main content - offset for sidebar */
+    .asyncapi__content {
+      margin-left: 280px !important;
+      padding: 1.5rem !important;
+      width: calc(100% - 280px) !important;
+    }
+    
+    /* Scroll offset for anchor links */
+    .asyncapi [id] {
+      scroll-margin-top: 150px;
+    }
+    
+    /* Responsive - hide sidebar on mobile */
+    @media (max-width: 768px) {
+      .asyncapi__sidebar {
+        display: none !important;
+      }
+      .asyncapi__sidebar-button {
+        display: flex !important;
+      }
+      .asyncapi__content {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
   ${this.renderHeader()}
   ${this.renderNav('asyncapi')}
   
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div id="asyncapi" class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <main class="relative">
+    <div id="asyncapi" class="bg-white min-h-screen">
       <div class="flex items-center justify-center h-64 text-gray-500">
         <div class="text-center">
           <svg class="animate-spin h-8 w-8 mx-auto mb-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -272,7 +320,7 @@ export class DocsController {
       .join('\n      ');
 
     return `
-  <nav class="bg-white border-b border-gray-200 sticky top-0 z-10">
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex gap-2 py-3 overflow-x-auto">
         ${links}
