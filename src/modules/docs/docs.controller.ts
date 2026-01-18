@@ -239,6 +239,30 @@ export class DocsController {
             },
           },
         }, document.getElementById('asyncapi'));
+        
+        // Fix sidebar navigation - handle clicks on sidebar links
+        setTimeout(() => {
+          const sidebar = document.querySelector('.asyncapi__sidebar');
+          if (sidebar) {
+            sidebar.addEventListener('click', (e) => {
+              const link = e.target.closest('a[href^="#"]');
+              if (link) {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').slice(1);
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                  const navHeight = 130; // Account for fixed header + nav
+                  const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                  window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                  });
+                }
+              }
+            });
+          }
+        }, 1000); // Wait for component to render
+        
       } catch (error) {
         console.error('AsyncAPI Error:', error);
         document.getElementById('asyncapi').innerHTML = 
