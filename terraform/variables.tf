@@ -122,3 +122,10 @@ variable "mapbox_secret_token" {
   type        = string
   sensitive   = true
 }
+
+# GitHub Configuration
+variable "github_repository" {
+  description = "GitHub repository in format 'owner/repo' for Workload Identity Federation"
+  type        = string
+  default     = "ski-mate/skimate-backend"
+}

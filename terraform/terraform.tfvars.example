@@ -31,3 +31,6 @@ strava_client_id        = "196491"
 strava_client_secret    = "YOUR_STRAVA_CLIENT_SECRET"
 mapbox_public_token     = "YOUR_MAPBOX_PUBLIC_TOKEN"
 mapbox_secret_token     = "YOUR_MAPBOX_SECRET_TOKEN"
+
+# GitHub Configuration (for Workload Identity Federation)
+github_repository = "ski-mate/skimate-backend"

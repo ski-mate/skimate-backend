@@ -42,3 +42,14 @@ output "database_user" {
   description = "Database user"
   value       = google_sql_user.user.name
 }
+
+# GitHub Actions Workload Identity outputs
+output "github_workload_identity_provider" {
+  description = "Workload Identity Provider resource name for GitHub Actions (use as GCP_WORKLOAD_IDENTITY_PROVIDER secret)"
+  value       = google_iam_workload_identity_pool_provider.github_provider.name
+}
+
+output "github_service_account_email" {
+  description = "Service account email for GitHub Actions (use as GCP_SERVICE_ACCOUNT secret)"
+  value       = google_service_account.github_actions.email
+}
