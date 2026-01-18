@@ -113,7 +113,11 @@ export class ResortService {
    */
   async setWeather(resortId: string, weather: WeatherData): Promise<void> {
     const cacheKey = `weather:${resortId}`;
-    await this.redis.setex(cacheKey, WEATHER_CACHE_TTL, JSON.stringify(weather));
+    await this.redis.setex(
+      cacheKey,
+      WEATHER_CACHE_TTL,
+      JSON.stringify(weather),
+    );
   }
 
   /**
@@ -134,7 +138,11 @@ export class ResortService {
     });
 
     // Cache for next request
-    await this.redis.setex(cacheKey, LIFT_STATUS_CACHE_TTL, JSON.stringify(lifts));
+    await this.redis.setex(
+      cacheKey,
+      LIFT_STATUS_CACHE_TTL,
+      JSON.stringify(lifts),
+    );
 
     return lifts;
   }
@@ -142,10 +150,7 @@ export class ResortService {
   /**
    * Update lift status
    */
-  async updateLiftStatus(
-    liftId: string,
-    status: LiftStatus,
-  ): Promise<Lift> {
+  async updateLiftStatus(liftId: string, status: LiftStatus): Promise<Lift> {
     const lift = await this.liftRepository.findOne({ where: { id: liftId } });
 
     if (!lift) {
@@ -199,7 +204,9 @@ export class ResortService {
     trailId: string,
     status: TrailStatus,
   ): Promise<Trail> {
-    const trail = await this.trailRepository.findOne({ where: { id: trailId } });
+    const trail = await this.trailRepository.findOne({
+      where: { id: trailId },
+    });
 
     if (!trail) {
       throw new NotFoundException('Trail not found');
@@ -214,7 +221,9 @@ export class ResortService {
   /**
    * Convert trails to GeoJSON FeatureCollection for Mapbox
    */
-  async exportTrailsAsGeoJSON(resortId: string): Promise<GeoJSONFeatureCollection> {
+  async exportTrailsAsGeoJSON(
+    resortId: string,
+  ): Promise<GeoJSONFeatureCollection> {
     const trails = await this.trailRepository
       .createQueryBuilder('trail')
       .select([

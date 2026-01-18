@@ -9,9 +9,7 @@ import { Lift } from './entities/lift.entity.js';
 import { SkiSession } from '../location/entities/ski-session.entity.js';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Resort, Trail, Lift, SkiSession]),
-  ],
+  imports: [TypeOrmModule.forFeature([Resort, Trail, Lift, SkiSession])],
   controllers: [StravaController],
   providers: [ResortService, StravaService],
   exports: [ResortService, StravaService],

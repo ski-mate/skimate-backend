@@ -116,9 +116,16 @@ describe('LocationPingProcessor', () => {
   describe('haversine distance calculation', () => {
     it('should calculate distance between two points', () => {
       // Access private method via type casting
-      const calcDistance = (processor as unknown as {
-        haversineDistance: (lat1: number, lon1: number, lat2: number, lon2: number) => number;
-      }).haversineDistance.bind(processor);
+      const calcDistance = (
+        processor as unknown as {
+          haversineDistance: (
+            lat1: number,
+            lon1: number,
+            lat2: number,
+            lon2: number,
+          ) => number;
+        }
+      ).haversineDistance.bind(processor);
 
       // Two points approximately 1km apart
       const distance = calcDistance(
@@ -134,16 +141,18 @@ describe('LocationPingProcessor', () => {
     });
 
     it('should return 0 for same point', () => {
-      const calcDistance = (processor as unknown as {
-        haversineDistance: (lat1: number, lon1: number, lat2: number, lon2: number) => number;
-      }).haversineDistance.bind(processor);
+      const calcDistance = (
+        processor as unknown as {
+          haversineDistance: (
+            lat1: number,
+            lon1: number,
+            lat2: number,
+            lon2: number,
+          ) => number;
+        }
+      ).haversineDistance.bind(processor);
 
-      const distance = calcDistance(
-        39.6042,
-        -105.9538,
-        39.6042,
-        -105.9538,
-      );
+      const distance = calcDistance(39.6042, -105.9538, 39.6042, -105.9538);
 
       expect(distance).toBe(0);
     });

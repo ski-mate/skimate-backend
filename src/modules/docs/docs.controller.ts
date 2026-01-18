@@ -60,7 +60,10 @@ export class DocsController {
   @Public()
   @Header('Content-Type', 'text/html')
   getAuthGuide(): string {
-    const markdown = readFileSync(join(this.docsPath, 'AUTHENTICATION.md'), 'utf-8');
+    const markdown = readFileSync(
+      join(this.docsPath, 'AUTHENTICATION.md'),
+      'utf-8',
+    );
     return this.renderMarkdown('Authentication Guide', markdown);
   }
 
@@ -341,11 +344,14 @@ export class DocsController {
     html = this.escapeHtmlOutsideCode(html);
 
     // Code blocks (``` ... ```)
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_match: string, lang: string, code: string) => {
-      const language = lang || 'plaintext';
-      const unescapedCode = this.unescapeHtml(code.trim());
-      return `<pre><code class="language-${language}">${this.escapeHtml(unescapedCode)}</code></pre>`;
-    });
+    html = html.replace(
+      /```(\w*)\n([\s\S]*?)```/g,
+      (_match: string, lang: string, code: string) => {
+        const language = lang || 'plaintext';
+        const unescapedCode = this.unescapeHtml(code.trim());
+        return `<pre><code class="language-${language}">${this.escapeHtml(unescapedCode)}</code></pre>`;
+      },
+    );
 
     // Inline code (`...`)
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');

@@ -11,7 +11,9 @@ export class FirebaseAdminService implements OnModuleInit {
   constructor(private readonly configService: ConfigService<AppConfig, true>) {}
 
   onModuleInit(): void {
-    const projectId = this.configService.get('firebase.projectId', { infer: true });
+    const projectId = this.configService.get('firebase.projectId', {
+      infer: true,
+    });
 
     if (admin.apps.length === 0) {
       this.app = admin.initializeApp({

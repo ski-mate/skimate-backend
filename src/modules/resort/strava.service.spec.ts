@@ -91,7 +91,9 @@ describe('StravaService', () => {
 
       mockSessionRepository.findOne.mockResolvedValue(mockSession);
 
-      await service.handleActivityUpdated('67890', '12345', { title: 'Updated' });
+      await service.handleActivityUpdated('67890', '12345', {
+        title: 'Updated',
+      });
 
       expect(mockSessionRepository.findOne).toHaveBeenCalledWith({
         where: { stravaActivityId: '12345' },
@@ -101,7 +103,9 @@ describe('StravaService', () => {
     it('should try to create activity when session not found', async () => {
       mockSessionRepository.findOne.mockResolvedValue(null);
 
-      await service.handleActivityUpdated('67890', '12345', { title: 'Updated' });
+      await service.handleActivityUpdated('67890', '12345', {
+        title: 'Updated',
+      });
 
       expect(mockSessionRepository.findOne).toHaveBeenCalled();
     });
@@ -115,7 +119,10 @@ describe('StravaService', () => {
       };
 
       mockSessionRepository.findOne.mockResolvedValue(mockSession);
-      mockSessionRepository.save.mockResolvedValue({ ...mockSession, stravaActivityId: undefined });
+      mockSessionRepository.save.mockResolvedValue({
+        ...mockSession,
+        stravaActivityId: undefined,
+      });
 
       await service.handleActivityDeleted('67890', '12345');
 

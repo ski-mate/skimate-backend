@@ -70,8 +70,16 @@ export class ChatService {
       // Check if users are friends
       const friendship = await this.friendshipRepository.findOne({
         where: [
-          { userId1: userId, userId2: recipientId, status: FriendshipStatus.ACCEPTED },
-          { userId1: recipientId, userId2: userId, status: FriendshipStatus.ACCEPTED },
+          {
+            userId1: userId,
+            userId2: recipientId,
+            status: FriendshipStatus.ACCEPTED,
+          },
+          {
+            userId1: recipientId,
+            userId2: userId,
+            status: FriendshipStatus.ACCEPTED,
+          },
         ],
       });
 
@@ -157,7 +165,9 @@ export class ChatService {
     const cachedMessages = await this.redis.lrange(cacheKey, 0, limit - 1);
 
     if (cachedMessages.length > 0) {
-      this.logger.debug(`Returning ${cachedMessages.length} messages from cache`);
+      this.logger.debug(
+        `Returning ${cachedMessages.length} messages from cache`,
+      );
       return cachedMessages.map((json) => {
         const data = JSON.parse(json) as {
           id: string;

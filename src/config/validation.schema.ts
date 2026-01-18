@@ -1,4 +1,11 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min, Max } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  Max,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export enum Environment {

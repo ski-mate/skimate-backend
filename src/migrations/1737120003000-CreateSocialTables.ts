@@ -71,16 +71,28 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
     `);
 
     // Create indexes for friendships
-    await queryRunner.query(`CREATE INDEX "IDX_friendships_user1_status" ON "friendships" ("user_id_1", "status")`);
-    await queryRunner.query(`CREATE INDEX "IDX_friendships_user2_status" ON "friendships" ("user_id_2", "status")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_friendships_user1_status" ON "friendships" ("user_id_1", "status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_friendships_user2_status" ON "friendships" ("user_id_2", "status")`,
+    );
 
     // Create indexes for group_members
-    await queryRunner.query(`CREATE INDEX "IDX_group_members_group" ON "group_members" ("group_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_group_members_user" ON "group_members" ("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_group_members_group" ON "group_members" ("group_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_group_members_user" ON "group_members" ("user_id")`,
+    );
 
     // Create indexes for messages
-    await queryRunner.query(`CREATE INDEX "IDX_messages_group_sent" ON "messages" ("group_id", "sent_at")`);
-    await queryRunner.query(`CREATE INDEX "IDX_messages_dm_sent" ON "messages" ("recipient_id", "sender_id", "sent_at")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_messages_group_sent" ON "messages" ("group_id", "sent_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_messages_dm_sent" ON "messages" ("recipient_id", "sender_id", "sent_at")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -88,8 +100,12 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_messages_group_sent"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_group_members_user"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_group_members_group"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_friendships_user2_status"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_friendships_user1_status"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_friendships_user2_status"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_friendships_user1_status"`,
+    );
     await queryRunner.query(`DROP TABLE IF EXISTS "messages"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "group_members"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "groups"`);

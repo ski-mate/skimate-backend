@@ -57,16 +57,32 @@ export class CreateResortTables1737120004000 implements MigrationInterface {
     `);
 
     // Create GIST spatial indexes for PostGIS columns
-    await queryRunner.query(`CREATE INDEX "idx_resorts_spatial" ON "resorts" USING GIST ("boundary")`);
-    await queryRunner.query(`CREATE INDEX "idx_resorts_center_spatial" ON "resorts" USING GIST ("center_point")`);
-    await queryRunner.query(`CREATE INDEX "idx_trails_spatial" ON "trails" USING GIST ("path")`);
-    await queryRunner.query(`CREATE INDEX "idx_lifts_spatial" ON "lifts" USING GIST ("path")`);
+    await queryRunner.query(
+      `CREATE INDEX "idx_resorts_spatial" ON "resorts" USING GIST ("boundary")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_resorts_center_spatial" ON "resorts" USING GIST ("center_point")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_trails_spatial" ON "trails" USING GIST ("path")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "idx_lifts_spatial" ON "lifts" USING GIST ("path")`,
+    );
 
     // Create regular indexes
-    await queryRunner.query(`CREATE INDEX "IDX_trails_resort" ON "trails" ("resort_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_lifts_resort" ON "lifts" ("resort_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_trails_status" ON "trails" ("status")`);
-    await queryRunner.query(`CREATE INDEX "IDX_lifts_status" ON "lifts" ("status")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_trails_resort" ON "trails" ("resort_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_lifts_resort" ON "lifts" ("resort_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_trails_status" ON "trails" ("status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_lifts_status" ON "lifts" ("status")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -76,7 +92,9 @@ export class CreateResortTables1737120004000 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_trails_resort"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_lifts_spatial"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_trails_spatial"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "idx_resorts_center_spatial"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "idx_resorts_center_spatial"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_resorts_spatial"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "lifts"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "trails"`);

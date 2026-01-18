@@ -60,20 +60,22 @@ export class LocationGateway
 
   async handleDisconnect(client: AuthenticatedSocket): Promise<void> {
     const userId = client.user?.uid;
-    
+
     if (userId) {
       // Remove user from active connections
       await this.redis.srem(`connections:${userId}`, client.id);
-      
+
       // Check if user has no more connections
-      const remainingConnections = await this.redis.scard(`connections:${userId}`);
-      
+      const remainingConnections = await this.redis.scard(
+        `connections:${userId}`,
+      );
+
       if (remainingConnections === 0) {
         // User is fully disconnected - handle session pause/end
         await this.locationService.handleUserDisconnect(userId);
       }
     }
-    
+
     this.lastPingTimestamps.delete(client.id);
     this.logger.log(`Client disconnected: ${client.id}`);
   }
@@ -85,7 +87,7 @@ export class LocationGateway
     @MessageBody() data: LocationPing,
   ): Promise<{ success: boolean; throttled?: boolean }> {
     const userId = client.user?.uid;
-    
+
     if (!userId) {
       return { success: false };
     }
@@ -93,11 +95,11 @@ export class LocationGateway
     // Throttle: max 1 ping per second per client
     const lastPing = this.lastPingTimestamps.get(client.id) ?? 0;
     const now = Date.now();
-    
+
     if (now - lastPing < this.THROTTLE_MS) {
       return { success: false, throttled: true };
     }
-    
+
     this.lastPingTimestamps.set(client.id, now);
 
     try {
@@ -112,7 +114,7 @@ export class LocationGateway
         const friendSocketIds = await this.redis.smembers(
           `connections:${friend.friendId}`,
         );
-        
+
         const locationUpdate: LocationUpdate = {
           userId,
           latitude: data.latitude,
@@ -153,7 +155,7 @@ export class LocationGateway
     @MessageBody() data: { resortId?: string },
   ): Promise<{ success: boolean; sessionId?: string; startTime?: number }> {
     const userId = client.user?.uid;
-    
+
     if (!userId) {
       return { success: false };
     }
@@ -193,7 +195,7 @@ export class LocationGateway
     };
   }> {
     const userId = client.user?.uid;
-    
+
     if (!userId) {
       return { success: false };
     }
@@ -226,7 +228,7 @@ export class LocationGateway
     @MessageBody() data: { friendIds: string[] },
   ): Promise<{ success: boolean }> {
     const userId = client.user?.uid;
-    
+
     if (!userId) {
       return { success: false };
     }
@@ -235,7 +237,7 @@ export class LocationGateway
       // Subscribe to friend location updates
       // This creates a Redis subscription pattern for the user
       await this.locationService.subscribeToFriends(userId, data.friendIds);
-      
+
       return { success: true };
     } catch (error) {
       this.logger.error(`Subscribe error: ${(error as Error).message}`);

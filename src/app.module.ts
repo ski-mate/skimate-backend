@@ -15,7 +15,11 @@ import { ResortModule } from './modules/resort/resort.module.js';
 import { DocsModule } from './modules/docs/docs.module.js';
 
 // Entities
-import { User, UserPreferences, Friendship } from './modules/users/entities/index.js';
+import {
+  User,
+  UserPreferences,
+  Friendship,
+} from './modules/users/entities/index.js';
 import { Group, Message } from './modules/chat/entities/index.js';
 import { Resort, Trail, Lift } from './modules/resort/entities/index.js';
 import { SkiSession, LocationPing } from './modules/location/entities/index.js';
@@ -55,7 +59,8 @@ const entities = [
         database: configService.get('database.name', { infer: true }),
         entities,
         synchronize: false, // NEVER true in production - use migrations
-        logging: configService.get('nodeEnv', { infer: true }) === 'development',
+        logging:
+          configService.get('nodeEnv', { infer: true }) === 'development',
         ssl:
           configService.get('nodeEnv', { infer: true }) === 'production'
             ? { rejectUnauthorized: false }
@@ -71,7 +76,8 @@ const entities = [
         connection: {
           host: configService.get('redis.host', { infer: true }),
           port: configService.get('redis.port', { infer: true }),
-          password: configService.get('redis.password', { infer: true }) || undefined,
+          password:
+            configService.get('redis.password', { infer: true }) || undefined,
         },
       }),
     }),

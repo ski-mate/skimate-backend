@@ -1,4 +1,10 @@
-import { Injectable, Logger, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Inject,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Redis from 'ioredis';
@@ -185,7 +191,8 @@ export class GroupService {
     );
 
     // Calculate centroid
-    const centroid: Feature<Point, GeoJsonProperties> = center(featureCollection);
+    const centroid: Feature<Point, GeoJsonProperties> =
+      center(featureCollection);
 
     const [longitude, latitude] = centroid.geometry.coordinates;
 

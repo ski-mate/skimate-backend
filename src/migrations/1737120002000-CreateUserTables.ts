@@ -38,7 +38,9 @@ export class CreateUserTables1737120002000 implements MigrationInterface {
     `);
 
     // Create index on email for fast lookups
-    await queryRunner.query(`CREATE INDEX "IDX_users_email" ON "users" ("email")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_users_email" ON "users" ("email")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

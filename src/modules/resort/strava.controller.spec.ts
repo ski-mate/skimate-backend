@@ -68,7 +68,9 @@ describe('StravaController', () => {
         'hub.verify_token': 'test-verify-token',
       };
 
-      expect(() => controller.handleChallenge(query)).toThrow(BadRequestException);
+      expect(() => controller.handleChallenge(query)).toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw UnauthorizedException for invalid verify token', () => {
@@ -78,7 +80,9 @@ describe('StravaController', () => {
         'hub.verify_token': 'wrong-token',
       };
 
-      expect(() => controller.handleChallenge(query)).toThrow(UnauthorizedException);
+      expect(() => controller.handleChallenge(query)).toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
