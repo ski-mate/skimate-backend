@@ -8,7 +8,7 @@ export class CreateTrackingTables1737120005000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE "ski_sessions" (
         "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-        "user_id" uuid NOT NULL,
+        "user_id" varchar NOT NULL,
         "resort_id" uuid,
         "total_vertical" float NOT NULL DEFAULT 0,
         "total_distance" float NOT NULL DEFAULT 0,
@@ -32,7 +32,7 @@ export class CreateTrackingTables1737120005000 implements MigrationInterface {
       CREATE TABLE "location_pings" (
         "id" BIGSERIAL NOT NULL,
         "session_id" uuid NOT NULL,
-        "user_id" uuid NOT NULL,
+        "user_id" varchar NOT NULL,
         "coords" geography(Point, 4326) NOT NULL,
         "altitude" float NOT NULL,
         "speed" float NOT NULL,

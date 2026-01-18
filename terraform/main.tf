@@ -133,8 +133,15 @@ resource "google_sql_database_instance" "postgres" {
     disk_type         = "PD_SSD"
 
     ip_configuration {
-      ipv4_enabled    = false
+      ipv4_enabled    = true  # Enable public IP for Cloud SQL Proxy access
       private_network = google_compute_network.vpc.id
+
+      # Allow access from anywhere (for development)
+      # In production, restrict to specific IPs
+      authorized_networks {
+        name  = "allow-all-dev"
+        value = "0.0.0.0/0"
+      }
     }
 
     database_flags {
