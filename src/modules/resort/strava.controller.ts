@@ -78,10 +78,10 @@ export class StravaController {
   @Post()
   @Public()
   @HttpCode(HttpStatus.OK)
-  async handleWebhook(
+  handleWebhook(
     @Body() event: StravaWebhookEvent,
     @Headers('x-hub-signature') signature?: string,
-  ): Promise<{ status: string }> {
+  ): { status: string } {
     this.logger.log(
       `Received Strava webhook: ${event.object_type} ${event.aspect_type} ${event.object_id}`,
     );
@@ -98,7 +98,7 @@ export class StravaController {
     // Process the event asynchronously (don't block the response)
     // Must respond within 2 seconds
     setImmediate(() => {
-      this.processEvent(event).catch((error) => {
+      this.processEvent(event).catch((error: Error) => {
         this.logger.error(`Failed to process Strava event: ${error.message}`);
       });
     });
@@ -163,8 +163,10 @@ export class StravaController {
         );
         break;
 
-      default:
-        this.logger.debug(`Unknown aspect type: ${event.aspect_type}`);
+      default: {
+        const aspectType: string = event.aspect_type;
+        this.logger.debug(`Unknown aspect type: ${aspectType}`);
+      }
     }
   }
 }

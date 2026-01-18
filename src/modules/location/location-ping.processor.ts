@@ -45,7 +45,7 @@ export class LocationPingProcessor extends WorkerHost {
   private startFlushTimer(): void {
     setInterval(() => {
       if (this.batchBuffer.length > 0) {
-        this.flushBatch().catch((err) => {
+        this.flushBatch().catch((err: Error) => {
           this.logger.error(`Flush timer error: ${err.message}`);
         });
       }

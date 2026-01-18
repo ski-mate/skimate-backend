@@ -11,9 +11,9 @@ import { LiftStatus, TrailStatus } from '../../common/enums/index.js';
 
 describe('ResortService', () => {
   let service: ResortService;
-  let resortRepository: Repository<Resort>;
-  let trailRepository: Repository<Trail>;
-  let liftRepository: Repository<Lift>;
+  let _resortRepository: Repository<Resort>;
+  let _trailRepository: Repository<Trail>;
+  let _liftRepository: Repository<Lift>;
 
   const mockRedis = {
     get: jest.fn(),
@@ -67,11 +67,11 @@ describe('ResortService', () => {
     }).compile();
 
     service = module.get<ResortService>(ResortService);
-    resortRepository = module.get<Repository<Resort>>(
+    _resortRepository = module.get<Repository<Resort>>(
       getRepositoryToken(Resort),
     );
-    trailRepository = module.get<Repository<Trail>>(getRepositoryToken(Trail));
-    liftRepository = module.get<Repository<Lift>>(getRepositoryToken(Lift));
+    _trailRepository = module.get<Repository<Trail>>(getRepositoryToken(Trail));
+    _liftRepository = module.get<Repository<Lift>>(getRepositoryToken(Lift));
   });
 
   describe('getResort', () => {

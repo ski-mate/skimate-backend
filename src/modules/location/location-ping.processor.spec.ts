@@ -9,8 +9,8 @@ import type { Job } from 'bullmq';
 
 describe('LocationPingProcessor', () => {
   let processor: LocationPingProcessor;
-  let locationPingRepository: Repository<LocationPing>;
-  let sessionRepository: Repository<SkiSession>;
+  let _locationPingRepository: Repository<LocationPing>;
+  let _sessionRepository: Repository<SkiSession>;
 
   const mockLocationPingRepository = {
     create: jest.fn(),
@@ -44,10 +44,10 @@ describe('LocationPingProcessor', () => {
     }).compile();
 
     processor = module.get<LocationPingProcessor>(LocationPingProcessor);
-    locationPingRepository = module.get<Repository<LocationPing>>(
+    _locationPingRepository = module.get<Repository<LocationPing>>(
       getRepositoryToken(LocationPing),
     );
-    sessionRepository = module.get<Repository<SkiSession>>(
+    _sessionRepository = module.get<Repository<SkiSession>>(
       getRepositoryToken(SkiSession),
     );
 

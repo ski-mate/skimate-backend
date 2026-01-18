@@ -15,7 +15,7 @@ jest.mock('firebase-admin', () => ({
 
 describe('FirebaseAdminService', () => {
   let service: FirebaseAdminService;
-  let configService: ConfigService;
+  let _configService: ConfigService;
 
   const mockConfigService = {
     get: jest.fn().mockReturnValue('skimate-307c2'),
@@ -35,7 +35,7 @@ describe('FirebaseAdminService', () => {
     }).compile();
 
     service = module.get<FirebaseAdminService>(FirebaseAdminService);
-    configService = module.get<ConfigService>(ConfigService);
+    _configService = module.get<ConfigService>(ConfigService);
   });
 
   afterEach(() => {

@@ -21,7 +21,7 @@ interface AuthenticatedSocket extends Socket {
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
-  let chatService: ChatService;
+  let _chatService: ChatService;
 
   const mockRedis = {
     duplicate: jest.fn().mockReturnThis(),
@@ -70,7 +70,7 @@ describe('ChatGateway', () => {
     }).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);
-    chatService = module.get<ChatService>(ChatService);
+    _chatService = module.get<ChatService>(ChatService);
 
     // Mock server
     gateway.server = {

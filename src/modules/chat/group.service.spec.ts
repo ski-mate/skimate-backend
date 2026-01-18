@@ -9,8 +9,8 @@ import { REDIS_CLIENT } from '../../common/redis/index.js';
 
 describe('GroupService', () => {
   let service: GroupService;
-  let groupRepository: Repository<Group>;
-  let userRepository: Repository<User>;
+  let _groupRepository: Repository<Group>;
+  let _userRepository: Repository<User>;
 
   const mockRedis = {
     geopos: jest.fn().mockResolvedValue([]),
@@ -50,8 +50,8 @@ describe('GroupService', () => {
     }).compile();
 
     service = module.get<GroupService>(GroupService);
-    groupRepository = module.get<Repository<Group>>(getRepositoryToken(Group));
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    _groupRepository = module.get<Repository<Group>>(getRepositoryToken(Group));
+    _userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   describe('createGroup', () => {

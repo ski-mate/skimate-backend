@@ -65,12 +65,12 @@ export class ChatGateway
     private readonly chatService: ChatService,
   ) {}
 
-  afterInit(_server: Server): void {
+  afterInit(): void {
     // Redis adapter is configured at the application level in main.ts
     this.logger.log('Chat Gateway initialized');
   }
 
-  async handleConnection(client: AuthenticatedSocket): Promise<void> {
+  handleConnection(client: AuthenticatedSocket): void {
     this.logger.log(`Chat client connected: ${client.id}`);
   }
 

@@ -12,9 +12,9 @@ import type { LocationPing } from '../../proto/location.js';
 
 describe('LocationService', () => {
   let service: LocationService;
-  let sessionRepository: Repository<SkiSession>;
-  let friendshipRepository: Repository<Friendship>;
-  let userRepository: Repository<User>;
+  let _sessionRepository: Repository<SkiSession>;
+  let _friendshipRepository: Repository<Friendship>;
+  let _userRepository: Repository<User>;
 
   const mockRedis = {
     geoadd: jest.fn().mockResolvedValue(1),
@@ -80,13 +80,13 @@ describe('LocationService', () => {
     }).compile();
 
     service = module.get<LocationService>(LocationService);
-    sessionRepository = module.get<Repository<SkiSession>>(
+    _sessionRepository = module.get<Repository<SkiSession>>(
       getRepositoryToken(SkiSession),
     );
-    friendshipRepository = module.get<Repository<Friendship>>(
+    _friendshipRepository = module.get<Repository<Friendship>>(
       getRepositoryToken(Friendship),
     );
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    _userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   describe('processLocationPing', () => {
@@ -286,11 +286,12 @@ describe('LocationService', () => {
       };
 
       mockSessionRepository.findOne.mockResolvedValue(mockSession);
-      mockSessionRepository.save.mockResolvedValue({
+      const savedSession = {
         ...mockSession,
         isActive: false,
         endTime: new Date(),
-      });
+      };
+      mockSessionRepository.save.mockResolvedValue(savedSession);
 
       const result = await service.endSession('user-123', 'session-123');
 

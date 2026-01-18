@@ -6,8 +6,8 @@ import { StravaService } from './strava.service.js';
 
 describe('StravaController', () => {
   let controller: StravaController;
-  let stravaService: StravaService;
-  let configService: ConfigService;
+  let _stravaService: StravaService;
+  let _configService: ConfigService;
 
   const mockStravaService = {
     handleActivityCreated: jest.fn(),
@@ -44,8 +44,8 @@ describe('StravaController', () => {
     }).compile();
 
     controller = module.get<StravaController>(StravaController);
-    stravaService = module.get<StravaService>(StravaService);
-    configService = module.get<ConfigService>(ConfigService);
+    _stravaService = module.get<StravaService>(StravaService);
+    _configService = module.get<ConfigService>(ConfigService);
   });
 
   describe('handleChallenge (GET /webhooks/strava)', () => {
