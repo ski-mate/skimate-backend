@@ -1,0 +1,20 @@
+/**
+ * SkiMate API Documentation - AsyncAPI Styles
+ * Styles for the AsyncAPI spec viewer
+ */
+
+#asyncapi {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.asyncapi__info {
+  padding: 20px !important;
+}
+
+/* Fix scroll offset for anchor navigation */
+#asyncapi [id] {
+  scroll-margin-top: 20px;
+}

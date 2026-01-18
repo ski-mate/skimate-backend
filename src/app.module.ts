@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { APP_GUARD } from '@nestjs/core';
 import { BullModule } from '@nestjs/bullmq';
+import { join } from 'path';
 
 import configuration, { type AppConfig } from './config/configuration.js';
 import { RedisModule } from './common/redis/index.js';
@@ -44,6 +46,12 @@ const entities = [
       isGlobal: true,
       load: [configuration],
       envFilePath: ['.env.local', '.env'],
+    }),
+
+    // Static files (CSS, images, etc.)
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/static',
     }),
 
     // TypeORM with PostgreSQL/PostGIS

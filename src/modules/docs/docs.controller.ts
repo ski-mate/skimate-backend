@@ -9,14 +9,13 @@ export class DocsController {
   private readonly docsPath = join(process.cwd(), 'docs');
 
   /**
-   * Main documentation landing page
-   * Renders AsyncAPI spec with interactive UI
+   * Main documentation landing page - AsyncAPI spec viewer
    */
   @Get()
   @Public()
   @Header('Content-Type', 'text/html')
   getDocsPage(): string {
-    return this.getAsyncApiHtml();
+    return this.renderAsyncApiPage();
   }
 
   /**
@@ -30,15 +29,13 @@ export class DocsController {
   }
 
   /**
-   * AsyncAPI specification (JSON)
+   * AsyncAPI specification (JSON format - returns YAML for component compatibility)
    */
   @Get('asyncapi.json')
   @Public()
   @Header('Content-Type', 'application/json')
   getAsyncApiJson(@Res() reply: FastifyReply): void {
     const yaml = readFileSync(join(this.docsPath, 'asyncapi.yaml'), 'utf-8');
-    // Simple YAML to JSON conversion for basic cases
-    // The AsyncAPI React component can handle YAML directly
     reply.header('Content-Type', 'text/yaml').send(yaml);
   }
 
@@ -50,7 +47,7 @@ export class DocsController {
   @Header('Content-Type', 'text/html')
   getApiGuide(): string {
     const markdown = readFileSync(join(this.docsPath, 'API.md'), 'utf-8');
-    return this.renderMarkdown('API Guide', markdown);
+    return this.renderMarkdownPage('API Guide', markdown);
   }
 
   /**
@@ -64,7 +61,7 @@ export class DocsController {
       join(this.docsPath, 'AUTHENTICATION.md'),
       'utf-8',
     );
-    return this.renderMarkdown('Authentication Guide', markdown);
+    return this.renderMarkdownPage('Authentication Guide', markdown);
   }
 
   /**
@@ -75,13 +72,14 @@ export class DocsController {
   @Header('Content-Type', 'text/html')
   getModelsGuide(): string {
     const markdown = readFileSync(join(this.docsPath, 'MODELS.md'), 'utf-8');
-    return this.renderMarkdown('Data Models', markdown);
+    return this.renderMarkdownPage('Data Models', markdown);
   }
 
-  /**
-   * Generate AsyncAPI HTML page with React component
-   */
-  private getAsyncApiHtml(): string {
+  // =========================================================================
+  // HTML Rendering
+  // =========================================================================
+
+  private renderAsyncApiPage(): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,90 +87,16 @@ export class DocsController {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SkiMate API Documentation</title>
   <link rel="stylesheet" href="https://unpkg.com/@asyncapi/react-component@1.4.10/styles/default.min.css">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: #f5f5f5;
-    }
-    .header {
-      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-      color: white;
-      padding: 20px 40px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .header h1 {
-      margin: 0 0 10px 0;
-      font-size: 28px;
-    }
-    .header p {
-      margin: 0;
-      opacity: 0.9;
-    }
-    .nav {
-      background: white;
-      padding: 15px 40px;
-      border-bottom: 1px solid #e0e0e0;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .nav a {
-      color: #1a73e8;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    .nav a:hover {
-      background: #e3f2fd;
-    }
-    .nav a.active {
-      background: #1a73e8;
-      color: white;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    #asyncapi {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-    .asyncapi__info {
-      padding: 20px !important;
-    }
-    /* Fix scroll offset for anchor navigation */
-    #asyncapi [id] {
-      scroll-margin-top: 20px;
-    }
-    html {
-      scroll-behavior: smooth;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/docs-common.css">
+  <link rel="stylesheet" href="/static/css/docs-asyncapi.css">
 </head>
 <body>
-  <div class="header">
-    <h1>SkiMate API Documentation</h1>
-    <p>Real-time ski tracking and social platform WebSocket API</p>
-  </div>
+  ${this.renderHeader()}
+  ${this.renderNav('asyncapi')}
   
-  <nav class="nav">
-    <a href="/docs" class="active">AsyncAPI Spec</a>
-    <a href="/docs/api">API Guide</a>
-    <a href="/docs/auth">Authentication</a>
-    <a href="/docs/models">Data Models</a>
-    <a href="/docs/asyncapi.yaml" target="_blank">Download YAML</a>
-  </nav>
-  
-  <div class="container">
+  <div class="docs-container">
     <div id="asyncapi">
-      <div style="padding: 40px; text-align: center; color: #666;">
+      <div class="docs-loading">
         <p>Loading API specification...</p>
       </div>
     </div>
@@ -187,7 +111,6 @@ export class DocsController {
           throw new Error('Failed to load: ' + response.status + ' ' + response.statusText);
         }
         const schema = await response.text();
-        console.log('Schema loaded, length:', schema.length);
         
         if (typeof AsyncApiStandalone === 'undefined') {
           throw new Error('AsyncAPI component failed to load from CDN');
@@ -214,10 +137,10 @@ export class DocsController {
       } catch (error) {
         console.error('AsyncAPI Error:', error);
         document.getElementById('asyncapi').innerHTML = 
-          '<div style="padding: 40px; text-align: center; color: #d32f2f;">' +
+          '<div class="docs-error">' +
           '<h2>Error Loading API Specification</h2>' +
           '<p>' + error.message + '</p>' +
-          '<p style="margin-top: 20px;"><a href="/docs/asyncapi.yaml" style="color: #1a73e8;">Download YAML directly</a></p>' +
+          '<p><a href="/docs/asyncapi.yaml">Download YAML directly</a></p>' +
           '</div>';
       }
     })();
@@ -226,11 +149,7 @@ export class DocsController {
 </html>`;
   }
 
-  /**
-   * Render Markdown as HTML with GitHub-like styling
-   */
-  private renderMarkdown(title: string, markdown: string): string {
-    // Escape HTML in code blocks but convert markdown syntax
+  private renderMarkdownPage(title: string, markdown: string): string {
     const html = this.markdownToHtml(markdown);
 
     return `<!DOCTYPE html>
@@ -239,142 +158,15 @@ export class DocsController {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title} - SkiMate API</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: #f5f5f5;
-    }
-    .header {
-      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-      color: white;
-      padding: 20px 40px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .header h1 {
-      margin: 0 0 10px 0;
-      font-size: 28px;
-    }
-    .header p {
-      margin: 0;
-      opacity: 0.9;
-    }
-    .nav {
-      background: white;
-      padding: 15px 40px;
-      border-bottom: 1px solid #e0e0e0;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .nav a {
-      color: #1a73e8;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    .nav a:hover {
-      background: #e3f2fd;
-    }
-    .nav a.active {
-      background: #1a73e8;
-      color: white;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-    .markdown-body {
-      background: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      color: #24292f;
-    }
-    .markdown-body h1, .markdown-body h2, .markdown-body h3,
-    .markdown-body h4, .markdown-body h5, .markdown-body h6 {
-      color: #1f2328;
-      font-weight: 600;
-      margin-top: 24px;
-      margin-bottom: 16px;
-    }
-    .markdown-body h1 { font-size: 2em; border-bottom: 1px solid #d0d7de; padding-bottom: 0.3em; }
-    .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #d0d7de; padding-bottom: 0.3em; }
-    .markdown-body h3 { font-size: 1.25em; }
-    .markdown-body p, .markdown-body li {
-      color: #24292f;
-      line-height: 1.6;
-    }
-    .markdown-body a {
-      color: #0969da;
-      text-decoration: none;
-    }
-    .markdown-body a:hover {
-      text-decoration: underline;
-    }
-    .markdown-body pre {
-      background: #f6f8fa;
-      border-radius: 6px;
-      padding: 16px;
-      overflow-x: auto;
-    }
-    .markdown-body code {
-      background: #f6f8fa;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 85%;
-      color: #24292f;
-    }
-    .markdown-body pre code {
-      background: none;
-      padding: 0;
-    }
-    .markdown-body table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .markdown-body table th,
-    .markdown-body table td {
-      border: 1px solid #d0d7de;
-      padding: 8px 12px;
-      color: #24292f !important;
-      background: white !important;
-    }
-    .markdown-body table th {
-      background: #f6f8fa !important;
-      font-weight: 600;
-    }
-    .markdown-body table tr:nth-child(even) td {
-      background: #f6f8fa !important;
-    }
-    .markdown-body hr {
-      border: none;
-      border-top: 1px solid #d0d7de;
-      margin: 24px 0;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/docs-common.css">
+  <link rel="stylesheet" href="/static/css/docs-markdown.css">
 </head>
 <body>
-  <div class="header">
-    <h1>SkiMate API Documentation</h1>
-    <p>Real-time ski tracking and social platform WebSocket API</p>
-  </div>
+  ${this.renderHeader()}
+  ${this.renderNav(this.getNavKey(title))}
   
-  <nav class="nav">
-    <a href="/docs">AsyncAPI Spec</a>
-    <a href="/docs/api" ${title === 'API Guide' ? 'class="active"' : ''}>API Guide</a>
-    <a href="/docs/auth" ${title === 'Authentication Guide' ? 'class="active"' : ''}>Authentication</a>
-    <a href="/docs/models" ${title === 'Data Models' ? 'class="active"' : ''}>Data Models</a>
-    <a href="/docs/asyncapi.yaml" target="_blank">Download YAML</a>
-  </nav>
-  
-  <div class="container">
+  <div class="docs-container docs-container--narrow">
     <article class="markdown-body">
       ${html}
     </article>
@@ -390,10 +182,54 @@ export class DocsController {
 </html>`;
   }
 
-  /**
-   * Simple markdown to HTML converter
-   * Handles basic markdown syntax for documentation
-   */
+  // =========================================================================
+  // Shared Components
+  // =========================================================================
+
+  private renderHeader(): string {
+    return `
+  <div class="docs-header">
+    <h1>SkiMate API Documentation</h1>
+    <p>Real-time ski tracking and social platform WebSocket API</p>
+  </div>`;
+  }
+
+  private renderNav(activeKey: string): string {
+    const items = [
+      { key: 'asyncapi', href: '/docs', label: 'AsyncAPI Spec' },
+      { key: 'api', href: '/docs/api', label: 'API Guide' },
+      { key: 'auth', href: '/docs/auth', label: 'Authentication' },
+      { key: 'models', href: '/docs/models', label: 'Data Models' },
+      { key: 'download', href: '/docs/asyncapi.yaml', label: 'Download YAML', target: '_blank' },
+    ];
+
+    const links = items
+      .map((item) => {
+        const activeClass = item.key === activeKey ? ' class="active"' : '';
+        const target = item.target ? ` target="${item.target}"` : '';
+        return `<a href="${item.href}"${activeClass}${target}>${item.label}</a>`;
+      })
+      .join('\n    ');
+
+    return `
+  <nav class="docs-nav">
+    ${links}
+  </nav>`;
+  }
+
+  private getNavKey(title: string): string {
+    const mapping: Record<string, string> = {
+      'API Guide': 'api',
+      'Authentication Guide': 'auth',
+      'Data Models': 'models',
+    };
+    return mapping[title] || '';
+  }
+
+  // =========================================================================
+  // Markdown Conversion
+  // =========================================================================
+
   private markdownToHtml(markdown: string): string {
     let html = markdown;
 
@@ -410,10 +246,10 @@ export class DocsController {
       },
     );
 
-    // Inline code (`...`)
+    // Inline code
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-    // Headers
+    // Headers (process largest first)
     html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
     html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
     html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
@@ -466,7 +302,6 @@ export class DocsController {
   }
 
   private escapeHtmlOutsideCode(text: string): string {
-    // Don't escape inside code blocks - they're handled separately
     const parts = text.split(/(```[\s\S]*?```)/);
     return parts
       .map((part, i) => {

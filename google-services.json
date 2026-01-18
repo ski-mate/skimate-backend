@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "346673974752",
+    "project_id": "skimate-307c2",
+    "storage_bucket": "skimate-307c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346673974752:android:b5e0e6d2762c40036cef85",
+        "android_client_info": {
+          "package_name": "skimate.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpxlJBBmtwnBRO62AfVuT5PX4FBifqS04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
