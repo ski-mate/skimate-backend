@@ -17,7 +17,7 @@ on:
           - prod
 
 env:
-  PROJECT_ID: skimate
+  PROJECT_ID: skimate-307c2
   REGION: us-central1
   SERVICE_NAME: skimate-api
 
