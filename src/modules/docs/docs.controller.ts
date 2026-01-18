@@ -164,14 +164,28 @@ export class DocsController {
   </nav>
   
   <div class="container">
-    <div id="asyncapi"></div>
+    <div id="asyncapi">
+      <div style="padding: 40px; text-align: center; color: #666;">
+        <p>Loading API specification...</p>
+      </div>
+    </div>
   </div>
 
-  <script src="https://unpkg.com/@asyncapi/react-component@1.4.10/browser/standalone/index.js"></script>
+  <script src="https://unpkg.com/@asyncapi/react-component@1.0.0-next.54/browser/standalone/index.js"></script>
   <script>
-    fetch('/docs/asyncapi.yaml')
-      .then(response => response.text())
-      .then(schema => {
+    (async function() {
+      try {
+        const response = await fetch('/docs/asyncapi.yaml');
+        if (!response.ok) {
+          throw new Error('Failed to load: ' + response.status + ' ' + response.statusText);
+        }
+        const schema = await response.text();
+        console.log('Schema loaded, length:', schema.length);
+        
+        if (typeof AsyncApiStandalone === 'undefined') {
+          throw new Error('AsyncAPI component failed to load from CDN');
+        }
+        
         AsyncApiStandalone.render({
           schema: schema,
           config: {
@@ -190,14 +204,16 @@ export class DocsController {
             },
           },
         }, document.getElementById('asyncapi'));
-      })
-      .catch(error => {
+      } catch (error) {
+        console.error('AsyncAPI Error:', error);
         document.getElementById('asyncapi').innerHTML = 
-          '<div style="padding: 40px; text-align: center; color: #666;">' +
+          '<div style="padding: 40px; text-align: center; color: #d32f2f;">' +
           '<h2>Error Loading API Specification</h2>' +
           '<p>' + error.message + '</p>' +
+          '<p style="margin-top: 20px;"><a href="/docs/asyncapi.yaml" style="color: #1a73e8;">Download YAML directly</a></p>' +
           '</div>';
-      });
+      }
+    })();
   </script>
 </body>
 </html>`;
@@ -272,6 +288,28 @@ export class DocsController {
       padding: 40px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      color: #24292f;
+    }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3,
+    .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+      color: #1f2328;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+    .markdown-body h1 { font-size: 2em; border-bottom: 1px solid #d0d7de; padding-bottom: 0.3em; }
+    .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #d0d7de; padding-bottom: 0.3em; }
+    .markdown-body h3 { font-size: 1.25em; }
+    .markdown-body p, .markdown-body li {
+      color: #24292f;
+      line-height: 1.6;
+    }
+    .markdown-body a {
+      color: #0969da;
+      text-decoration: none;
+    }
+    .markdown-body a:hover {
+      text-decoration: underline;
     }
     .markdown-body pre {
       background: #f6f8fa;
@@ -284,6 +322,7 @@ export class DocsController {
       padding: 2px 6px;
       border-radius: 3px;
       font-size: 85%;
+      color: #24292f;
     }
     .markdown-body pre code {
       background: none;
@@ -297,9 +336,16 @@ export class DocsController {
     .markdown-body table td {
       border: 1px solid #d0d7de;
       padding: 8px 12px;
+      color: #24292f;
     }
     .markdown-body table th {
       background: #f6f8fa;
+      font-weight: 600;
+    }
+    .markdown-body hr {
+      border: none;
+      border-top: 1px solid #d0d7de;
+      margin: 24px 0;
     }
   </style>
 </head>
