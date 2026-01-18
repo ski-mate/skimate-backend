@@ -8,8 +8,8 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE "friendships" (
         "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-        "user_id_1" uuid NOT NULL,
-        "user_id_2" uuid NOT NULL,
+        "user_id_1" varchar NOT NULL,
+        "user_id_2" varchar NOT NULL,
         "status" "friendship_status_enum" NOT NULL DEFAULT 'Pending',
         "created_at" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_friendships" PRIMARY KEY ("id"),
@@ -28,7 +28,7 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
         "name" character varying NOT NULL,
         "description" character varying,
         "avatar_url" character varying,
-        "created_by" uuid NOT NULL,
+        "created_by" varchar NOT NULL,
         "created_at" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_groups" PRIMARY KEY ("id"),
         CONSTRAINT "FK_groups_creator" FOREIGN KEY ("created_by") 
@@ -40,7 +40,7 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE "group_members" (
         "group_id" uuid NOT NULL,
-        "user_id" uuid NOT NULL,
+        "user_id" varchar NOT NULL,
         CONSTRAINT "PK_group_members" PRIMARY KEY ("group_id", "user_id"),
         CONSTRAINT "FK_group_members_group" FOREIGN KEY ("group_id") 
           REFERENCES "groups"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -53,12 +53,12 @@ export class CreateSocialTables1737120003000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE "messages" (
         "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-        "sender_id" uuid NOT NULL,
+        "sender_id" varchar NOT NULL,
         "group_id" uuid,
-        "recipient_id" uuid,
+        "recipient_id" varchar,
         "content" text NOT NULL,
         "metadata" jsonb,
-        "read_by" uuid[] NOT NULL DEFAULT '{}',
+        "read_by" varchar[] NOT NULL DEFAULT '{}',
         "sent_at" TIMESTAMP NOT NULL DEFAULT now(),
         CONSTRAINT "PK_messages" PRIMARY KEY ("id"),
         CONSTRAINT "FK_messages_sender" FOREIGN KEY ("sender_id") 

@@ -7,7 +7,7 @@ export class CreateUserTables1737120002000 implements MigrationInterface {
     // Create users table
     await queryRunner.query(`
       CREATE TABLE "users" (
-        "id" uuid NOT NULL,
+        "id" varchar NOT NULL,
         "email" character varying NOT NULL,
         "full_name" character varying NOT NULL,
         "phone_number" character varying,
@@ -25,7 +25,7 @@ export class CreateUserTables1737120002000 implements MigrationInterface {
     // Create user_preferences table
     await queryRunner.query(`
       CREATE TABLE "user_preferences" (
-        "user_id" uuid NOT NULL,
+        "user_id" varchar NOT NULL,
         "location_sharing_enabled" boolean NOT NULL DEFAULT true,
         "units" "units_enum" NOT NULL DEFAULT 'Metric',
         "notification_settings" jsonb NOT NULL DEFAULT '{}',

@@ -22,7 +22,8 @@
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/data-source.ts"
+    "migration:show": "npm run typeorm -- migration:show -d src/data-source.ts",
+    "seed": "tsx src/seeds/seed-test-data.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
@@ -42,6 +43,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "dotenv": "^16.6.1",
+    "firebase": "^12.8.0",
     "firebase-admin": "^13.6.0",
     "ioredis": "^5.9.2",
     "pg": "^8.17.1",
@@ -123,7 +125,9 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["../test/setup.ts"],
+    "setupFilesAfterEnv": [
+      "../test/setup.ts"
+    ],
     "clearMocks": true
   }
 }

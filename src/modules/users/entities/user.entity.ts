@@ -15,8 +15,8 @@ import { Group } from '../../chat/entities/group.entity.js';
 
 @Entity('users')
 export class User {
-  @PrimaryColumn('uuid')
-  id!: string; // Matches Firebase UID
+  @PrimaryColumn('varchar')
+  id!: string; // Firebase UID (28 characters)
 
   @Column({ unique: true })
   email!: string;
