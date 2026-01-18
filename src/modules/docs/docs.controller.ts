@@ -147,6 +147,13 @@ export class DocsController {
     .asyncapi__info {
       padding: 20px !important;
     }
+    /* Fix scroll offset for anchor navigation */
+    #asyncapi [id] {
+      scroll-margin-top: 20px;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
@@ -336,11 +343,15 @@ export class DocsController {
     .markdown-body table td {
       border: 1px solid #d0d7de;
       padding: 8px 12px;
-      color: #24292f;
+      color: #24292f !important;
+      background: white !important;
     }
     .markdown-body table th {
-      background: #f6f8fa;
+      background: #f6f8fa !important;
       font-weight: 600;
+    }
+    .markdown-body table tr:nth-child(even) td {
+      background: #f6f8fa !important;
     }
     .markdown-body hr {
       border: none;
