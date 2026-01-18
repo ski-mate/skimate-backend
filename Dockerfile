@@ -29,6 +29,7 @@ RUN npm ci --omit=dev
 # Copy built application
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/proto ./dist/proto
+COPY --from=builder /app/docs ./docs
 
 # Set environment
 ENV NODE_ENV=production
