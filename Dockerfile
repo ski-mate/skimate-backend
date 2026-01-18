@@ -30,7 +30,6 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/proto ./dist/proto
 COPY --from=builder /app/docs ./docs
-COPY --from=builder /app/public ./public
 
 # Set environment
 ENV NODE_ENV=production

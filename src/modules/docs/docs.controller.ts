@@ -76,31 +76,88 @@ export class DocsController {
   }
 
   // =========================================================================
-  // HTML Rendering
+  // HTML Rendering with Tailwind CSS
   // =========================================================================
+
+  private getHeadContent(title: string): string {
+    return `
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .prose-custom h1 { @apply text-3xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200; }
+      .prose-custom h2 { @apply text-2xl font-semibold text-gray-900 mt-8 mb-4 pb-2 border-b border-gray-200; }
+      .prose-custom h3 { @apply text-xl font-semibold text-gray-900 mt-6 mb-3; }
+      .prose-custom h4 { @apply text-lg font-semibold text-gray-900 mt-4 mb-2; }
+      .prose-custom p { @apply text-gray-700 leading-relaxed mb-4; }
+      .prose-custom a { @apply text-primary-600 hover:text-primary-700 hover:underline; }
+      .prose-custom ul, .prose-custom ol { @apply pl-6 mb-4 space-y-1; }
+      .prose-custom li { @apply text-gray-700; }
+      .prose-custom code { @apply bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm font-mono; }
+      .prose-custom pre { @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4; }
+      .prose-custom pre code { @apply bg-transparent text-gray-100 p-0; }
+      .prose-custom table { @apply w-full border-collapse mb-4; }
+      .prose-custom th { @apply bg-gray-100 text-left text-gray-900 font-semibold px-4 py-3 border border-gray-200; }
+      .prose-custom td { @apply text-gray-700 px-4 py-3 border border-gray-200; }
+      .prose-custom tr:nth-child(even) td { @apply bg-gray-50; }
+      .prose-custom hr { @apply border-gray-200 my-8; }
+      .prose-custom strong { @apply font-semibold text-gray-900; }
+    }
+  </style>`;
+  }
 
   private renderAsyncApiPage(): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkiMate API Documentation</title>
+  ${this.getHeadContent('SkiMate API Documentation')}
   <link rel="stylesheet" href="https://unpkg.com/@asyncapi/react-component@1.4.10/styles/default.min.css">
-  <link rel="stylesheet" href="/static/css/docs-common.css">
-  <link rel="stylesheet" href="/static/css/docs-asyncapi.css">
+  <style>
+    #asyncapi { @apply bg-white rounded-xl shadow-sm overflow-hidden; }
+    #asyncapi [id] { scroll-margin-top: 1rem; }
+  </style>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen">
   ${this.renderHeader()}
   ${this.renderNav('asyncapi')}
   
-  <div class="docs-container">
-    <div id="asyncapi">
-      <div class="docs-loading">
-        <p>Loading API specification...</p>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="asyncapi" class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="flex items-center justify-center h-64 text-gray-500">
+        <div class="text-center">
+          <svg class="animate-spin h-8 w-8 mx-auto mb-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm">Loading API specification...</p>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script src="https://unpkg.com/@asyncapi/react-component@1.0.0-next.54/browser/standalone/index.js"></script>
   <script>
@@ -137,10 +194,11 @@ export class DocsController {
       } catch (error) {
         console.error('AsyncAPI Error:', error);
         document.getElementById('asyncapi').innerHTML = 
-          '<div class="docs-error">' +
-          '<h2>Error Loading API Specification</h2>' +
-          '<p>' + error.message + '</p>' +
-          '<p><a href="/docs/asyncapi.yaml">Download YAML directly</a></p>' +
+          '<div class="flex flex-col items-center justify-center h-64 text-red-600">' +
+          '<svg class="h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>' +
+          '<h2 class="text-lg font-semibold mb-2">Error Loading API Specification</h2>' +
+          '<p class="text-gray-600 mb-4">' + error.message + '</p>' +
+          '<a href="/docs/asyncapi.yaml" class="text-primary-600 hover:text-primary-700 hover:underline">Download YAML directly</a>' +
           '</div>';
       }
     })();
@@ -155,22 +213,18 @@ export class DocsController {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} - SkiMate API</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-  <link rel="stylesheet" href="/static/css/docs-common.css">
-  <link rel="stylesheet" href="/static/css/docs-markdown.css">
+  ${this.getHeadContent(`${title} - SkiMate API`)}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen">
   ${this.renderHeader()}
   ${this.renderNav(this.getNavKey(title))}
   
-  <div class="docs-container docs-container--narrow">
-    <article class="markdown-body">
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <article class="bg-white rounded-xl shadow-sm p-8 sm:p-10 prose-custom">
       ${html}
     </article>
-  </div>
+  </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
@@ -188,10 +242,12 @@ export class DocsController {
 
   private renderHeader(): string {
     return `
-  <div class="docs-header">
-    <h1>SkiMate API Documentation</h1>
-    <p>Real-time ski tracking and social platform WebSocket API</p>
-  </div>`;
+  <header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <h1 class="text-2xl sm:text-3xl font-bold">SkiMate API Documentation</h1>
+      <p class="mt-1 text-primary-100 text-sm sm:text-base">Real-time ski tracking and social platform WebSocket API</p>
+    </div>
+  </header>`;
   }
 
   private renderNav(activeKey: string): string {
@@ -205,15 +261,23 @@ export class DocsController {
 
     const links = items
       .map((item) => {
-        const activeClass = item.key === activeKey ? ' class="active"' : '';
+        const isActive = item.key === activeKey;
+        const baseClasses = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors';
+        const activeClasses = isActive
+          ? 'bg-primary-600 text-white'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100';
         const target = item.target ? ` target="${item.target}"` : '';
-        return `<a href="${item.href}"${activeClass}${target}>${item.label}</a>`;
+        return `<a href="${item.href}" class="${baseClasses} ${activeClasses}"${target}>${item.label}</a>`;
       })
-      .join('\n    ');
+      .join('\n      ');
 
     return `
-  <nav class="docs-nav">
-    ${links}
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-2 py-3 overflow-x-auto">
+        ${links}
+      </div>
+    </div>
   </nav>`;
   }
 
