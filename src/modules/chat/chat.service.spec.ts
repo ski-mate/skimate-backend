@@ -11,8 +11,8 @@ import { FriendshipStatus } from '../../common/enums/index.js';
 
 describe('ChatService', () => {
   let service: ChatService;
-  let messageRepository: Repository<Message>;
-  let groupRepository: Repository<Group>;
+  let _messageRepository: Repository<Message>;
+  let _groupRepository: Repository<Group>;
 
   const mockRedis = {
     lpush: jest.fn().mockResolvedValue(1),
@@ -78,10 +78,10 @@ describe('ChatService', () => {
     }).compile();
 
     service = module.get<ChatService>(ChatService);
-    messageRepository = module.get<Repository<Message>>(
+    _messageRepository = module.get<Repository<Message>>(
       getRepositoryToken(Message),
     );
-    groupRepository = module.get<Repository<Group>>(getRepositoryToken(Group));
+    _groupRepository = module.get<Repository<Group>>(getRepositoryToken(Group));
   });
 
   describe('getRoomId', () => {
@@ -265,9 +265,10 @@ describe('ChatService', () => {
         execute: jest.fn().mockResolvedValue({ affected: 1 }),
       });
 
-      await service.markMessageAsRead('msg-123', 'user-456');
+      const result = await service.markMessageAsRead('msg-123', 'user-456');
 
       expect(mockMessageRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(result).toBeUndefined();
     });
   });
 

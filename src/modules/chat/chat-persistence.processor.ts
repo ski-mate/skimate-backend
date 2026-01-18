@@ -16,7 +16,7 @@ interface MessageJobData {
 export class ChatPersistenceProcessor extends WorkerHost {
   private readonly logger = new Logger(ChatPersistenceProcessor.name);
 
-  async process(job: Job<MessageJobData>): Promise<void> {
+  process(job: Job<MessageJobData>): void {
     // Messages are already persisted in createMessage
     // This processor can be used for additional tasks like:
     // - Sending push notifications

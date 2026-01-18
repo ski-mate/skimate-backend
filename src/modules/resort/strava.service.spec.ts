@@ -9,8 +9,8 @@ import { SkiSession } from '../location/entities/ski-session.entity.js';
 
 describe('StravaService', () => {
   let service: StravaService;
-  let sessionRepository: Repository<SkiSession>;
-  let resortService: ResortService;
+  let _sessionRepository: Repository<SkiSession>;
+  let _resortService: ResortService;
 
   const mockSessionRepository = {
     create: jest.fn(),
@@ -56,10 +56,10 @@ describe('StravaService', () => {
     }).compile();
 
     service = module.get<StravaService>(StravaService);
-    sessionRepository = module.get<Repository<SkiSession>>(
+    _sessionRepository = module.get<Repository<SkiSession>>(
       getRepositoryToken(SkiSession),
     );
-    resortService = module.get<ResortService>(ResortService);
+    _resortService = module.get<ResortService>(ResortService);
 
     // Suppress logger output during tests
     jest.spyOn(Logger.prototype, 'log').mockImplementation();

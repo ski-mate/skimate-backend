@@ -70,4 +70,4 @@ async function bootstrap(): Promise<void> {
   logger.log(`📊 Environment: ${process.env.NODE_ENV ?? 'development'}`);
 }
 
-bootstrap();
+void bootstrap();

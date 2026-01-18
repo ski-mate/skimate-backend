@@ -25,9 +25,9 @@ export class WsAuthGuard implements CanActivate {
     }
 
     // Get token from handshake auth or query
-    const token =
-      client.handshake.auth?.token ??
-      (client.handshake.query?.token as string);
+    const authToken = client.handshake.auth?.token as string | undefined;
+    const queryToken = client.handshake.query?.token as string | undefined;
+    const token = authToken ?? queryToken;
 
     if (!token) {
       throw new WsException('No authentication token provided');

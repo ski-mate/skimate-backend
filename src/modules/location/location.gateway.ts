@@ -46,21 +46,16 @@ export class LocationGateway
     private readonly locationService: LocationService,
   ) {}
 
-  afterInit(_server: Server): void {
+  afterInit(): void {
     // Redis adapter is configured at the application level in main.ts
     // This gateway is ready to handle location events
     this.logger.log('Location Gateway initialized');
   }
 
-  async handleConnection(client: AuthenticatedSocket): Promise<void> {
-    try {
-      // Authentication is handled by WsAuthGuard on individual messages
-      // Here we just log the connection
-      this.logger.log(`Client connected: ${client.id}`);
-    } catch (error) {
-      this.logger.error(`Connection error: ${(error as Error).message}`);
-      client.disconnect();
-    }
+  handleConnection(client: AuthenticatedSocket): void {
+    // Authentication is handled by WsAuthGuard on individual messages
+    // Here we just log the connection
+    this.logger.log(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: AuthenticatedSocket): Promise<void> {

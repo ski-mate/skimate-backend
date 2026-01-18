@@ -21,7 +21,7 @@ interface AuthenticatedSocket extends Socket {
 
 describe('LocationGateway', () => {
   let gateway: LocationGateway;
-  let locationService: LocationService;
+  let _locationService: LocationService;
 
   const mockRedis = {
     duplicate: jest.fn().mockReturnThis(),
@@ -69,7 +69,7 @@ describe('LocationGateway', () => {
     }).compile();
 
     gateway = module.get<LocationGateway>(LocationGateway);
-    locationService = module.get<LocationService>(LocationService);
+    _locationService = module.get<LocationService>(LocationService);
 
     // Suppress logger output during tests
     jest.spyOn(Logger.prototype, 'log').mockImplementation();

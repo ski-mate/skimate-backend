@@ -184,7 +184,7 @@ export class StravaService {
    * Find user by Strava athlete ID
    * Note: This requires storing Strava athlete ID during OAuth flow
    */
-  private async findUserByStravaId(stravaAthleteId: string): Promise<{ id: string } | null> {
+  private findUserByStravaId(stravaAthleteId: string): { id: string } | null {
     // In a real implementation, you'd have a strava_athlete_id column
     // For now, return null (users would need to be linked via OAuth)
     this.logger.debug(`Looking up user for Strava athlete ${stravaAthleteId}`);

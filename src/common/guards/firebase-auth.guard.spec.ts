@@ -6,8 +6,8 @@ import { FirebaseAdminService } from '../../modules/auth/firebase-admin.service.
 
 describe('FirebaseAuthGuard', () => {
   let guard: FirebaseAuthGuard;
-  let firebaseAdmin: FirebaseAdminService;
-  let reflector: Reflector;
+  let _firebaseAdmin: FirebaseAdminService;
+  let _reflector: Reflector;
 
   const mockFirebaseAdmin = {
     verifyIdToken: jest.fn(),
@@ -35,8 +35,8 @@ describe('FirebaseAuthGuard', () => {
     }).compile();
 
     guard = module.get<FirebaseAuthGuard>(FirebaseAuthGuard);
-    firebaseAdmin = module.get<FirebaseAdminService>(FirebaseAdminService);
-    reflector = module.get<Reflector>(Reflector);
+    _firebaseAdmin = module.get<FirebaseAdminService>(FirebaseAdminService);
+    _reflector = module.get<Reflector>(Reflector);
   });
 
   const createMockExecutionContext = (
